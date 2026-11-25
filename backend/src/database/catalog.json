@@ -1,0 +1,2253 @@
+[
+  {
+    "id": "leao-4r2-05cv",
+    "fabricante": "Leão",
+    "modelo": "4R2-08 (1/2 CV) - Submersa 4\"",
+    "tipo": "submersivel",
+    "potenciaCv": 0.5,
+    "potenciaKw": 0.37,
+    "tensao": "220V Monofásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa (Grade Inox)",
+    "bocalRecalque": "1\"",
+    "alturaMaximaMca": 52,
+    "vazaoMinimaM3h": 0.4,
+    "vazaoMaximaM3h": 2.8,
+    "coeficientesCurva": {
+      "a": -5.8,
+      "b": -2.4,
+      "c": 53
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.4,
+        "alturaMca": 51
+      },
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 45
+      },
+      {
+        "vazaoM3h": 1.8,
+        "alturaMca": 30
+      },
+      {
+        "vazaoM3h": 2.5,
+        "alturaMca": 10
+      },
+      {
+        "vazaoM3h": 2.8,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 1.5,
+    "alturaBepMca": 36,
+    "rendimentoMaximoPct": 62,
+    "caracteristicas": [
+      "Bomba submersa 4 polegadas multiestágios em aço inox e termoplástico",
+      "Motor Leão refrigerado a água de alta durabilidade",
+      "Excelente para poços artesianos residenciais e pequenos sítios"
+    ],
+    "precoAproximadoBrl": 1250,
+    "linkManual": "https://bombasleao.com.br"
+  },
+  {
+    "id": "leao-4r3-10cv",
+    "fabricante": "Leão",
+    "modelo": "4R3-12 (1.0 CV) - Submersa 4\"",
+    "tipo": "submersivel",
+    "potenciaCv": 1,
+    "potenciaKw": 0.75,
+    "tensao": "220V Monofásico ou 220/380V Trifásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa (Grade Inox)",
+    "bocalRecalque": "1.1/4\"",
+    "alturaMaximaMca": 78,
+    "vazaoMinimaM3h": 0.8,
+    "vazaoMaximaM3h": 4.2,
+    "coeficientesCurva": {
+      "a": -3.8,
+      "b": -2.8,
+      "c": 79
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.8,
+        "alturaMca": 76
+      },
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 60
+      },
+      {
+        "vazaoM3h": 3.2,
+        "alturaMca": 32
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 8
+      },
+      {
+        "vazaoM3h": 4.2,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 2.6,
+    "alturaBepMca": 48,
+    "rendimentoMaximoPct": 65,
+    "caracteristicas": [
+      "Linha 4R3 com 12 estágios para poços tubulares profundos",
+      "Válvula de retenção incorporada no cabeçote de descarga",
+      "Rotores flutuantes com alta tolerância a areia residual"
+    ],
+    "precoAproximadoBrl": 1780,
+    "linkManual": "https://bombasleao.com.br"
+  },
+  {
+    "id": "leao-4r4-15cv",
+    "fabricante": "Leão",
+    "modelo": "4R4-14 (1.5 CV) - Submersa 4\"",
+    "tipo": "submersivel",
+    "potenciaCv": 1.5,
+    "potenciaKw": 1.1,
+    "tensao": "220V Monofásico ou 220/380V Trifásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa (Grade Inox)",
+    "bocalRecalque": "1.1/4\"",
+    "alturaMaximaMca": 96,
+    "vazaoMinimaM3h": 1,
+    "vazaoMaximaM3h": 5.5,
+    "coeficientesCurva": {
+      "a": -2.6,
+      "b": -2.2,
+      "c": 97
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 92
+      },
+      {
+        "vazaoM3h": 2.5,
+        "alturaMca": 75
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 46
+      },
+      {
+        "vazaoM3h": 5.2,
+        "alturaMca": 12
+      },
+      {
+        "vazaoM3h": 5.5,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 3.5,
+    "alturaBepMca": 58,
+    "rendimentoMaximoPct": 67,
+    "caracteristicas": [
+      "Alta pressão e vazão intermediária para irrigação e pecuária",
+      "Corpo externo em aço inoxidável AISI 304",
+      "Eixo estriado acoplado segundo norma NEMA"
+    ],
+    "precoAproximadoBrl": 2200,
+    "linkManual": "https://bombasleao.com.br"
+  },
+  {
+    "id": "leao-4r5-20cv",
+    "fabricante": "Leão",
+    "modelo": "4R5-16 (2.0 CV) - Submersa 4\"",
+    "tipo": "submersivel",
+    "potenciaCv": 2,
+    "potenciaKw": 1.5,
+    "tensao": "220V Monofásico ou 220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "Submersa (Grade Inox)",
+    "bocalRecalque": "1.1/2\"",
+    "alturaMaximaMca": 112,
+    "vazaoMinimaM3h": 1.5,
+    "vazaoMaximaM3h": 7.2,
+    "coeficientesCurva": {
+      "a": -1.9,
+      "b": -1.8,
+      "c": 114
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1.5,
+        "alturaMca": 107
+      },
+      {
+        "vazaoM3h": 3.5,
+        "alturaMca": 84
+      },
+      {
+        "vazaoM3h": 5.5,
+        "alturaMca": 46
+      },
+      {
+        "vazaoM3h": 7,
+        "alturaMca": 10
+      },
+      {
+        "vazaoM3h": 7.2,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 4.5,
+    "alturaBepMca": 68,
+    "rendimentoMaximoPct": 68,
+    "caracteristicas": [
+      "Indicada para condomínios rurais, pivôs setoriais e dessedentação",
+      "Saída ampliada de 1.1/2 polegada para menor perda de carga",
+      "Suporta profundidades de instalação de até 100 metros"
+    ],
+    "precoAproximadoBrl": 2650,
+    "linkManual": "https://bombasleao.com.br"
+  },
+  {
+    "id": "leao-4r8-30cv",
+    "fabricante": "Leão",
+    "modelo": "4R8-15 (3.0 CV) - Alta Vazão 4\"",
+    "tipo": "submersivel",
+    "potenciaCv": 3,
+    "potenciaKw": 2.2,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "Submersa (Grade Inox)",
+    "bocalRecalque": "2\"",
+    "alturaMaximaMca": 105,
+    "vazaoMinimaM3h": 2,
+    "vazaoMaximaM3h": 11,
+    "coeficientesCurva": {
+      "a": -0.78,
+      "b": -1.1,
+      "c": 106
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 101
+      },
+      {
+        "vazaoM3h": 5,
+        "alturaMca": 81
+      },
+      {
+        "vazaoM3h": 8,
+        "alturaMca": 47
+      },
+      {
+        "vazaoM3h": 10.5,
+        "alturaMca": 12
+      },
+      {
+        "vazaoM3h": 11,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 7,
+    "alturaBepMca": 60,
+    "rendimentoMaximoPct": 70,
+    "caracteristicas": [
+      "Série de alta vazão para poços produtivos de 4 polegadas",
+      "Conexão de descarga de 2 polegadas roscada BSP",
+      "Rendimento hidráulico otimizado para agricultura irrigada"
+    ],
+    "precoAproximadoBrl": 3400,
+    "linkManual": "https://bombasleao.com.br"
+  },
+  {
+    "id": "leao-6r12-50cv",
+    "fabricante": "Leão",
+    "modelo": "6R12-08 (5.0 CV) - Poço Profundo 6\"",
+    "tipo": "submersivel",
+    "potenciaCv": 5,
+    "potenciaKw": 3.7,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "Submersa (Grade Inox)",
+    "bocalRecalque": "2.1/2\"",
+    "alturaMaximaMca": 135,
+    "vazaoMinimaM3h": 3,
+    "vazaoMaximaM3h": 16.5,
+    "coeficientesCurva": {
+      "a": -0.45,
+      "b": -0.85,
+      "c": 136
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 3,
+        "alturaMca": 129
+      },
+      {
+        "vazaoM3h": 8,
+        "alturaMca": 100
+      },
+      {
+        "vazaoM3h": 12,
+        "alturaMca": 60
+      },
+      {
+        "vazaoM3h": 15.5,
+        "alturaMca": 15
+      },
+      {
+        "vazaoM3h": 16.5,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 10.5,
+    "alturaBepMca": 78,
+    "rendimentoMaximoPct": 73,
+    "caracteristicas": [
+      "Bomba submersa 6 polegadas para poços de alta capacidade",
+      "Conjunto robusto com mancais de borracha nitrílica autolubrificados",
+      "Atende irrigação por gotejamento de médio e grande porte"
+    ],
+    "precoAproximadoBrl": 5100,
+    "linkManual": "https://bombasleao.com.br"
+  },
+  {
+    "id": "leao-6r18-75cv",
+    "fabricante": "Leão",
+    "modelo": "6R18-09 (7.5 CV) - Alta Vazão 6\"",
+    "tipo": "submersivel",
+    "potenciaCv": 7.5,
+    "potenciaKw": 5.5,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "Submersa (Grade Inox)",
+    "bocalRecalque": "3\"",
+    "alturaMaximaMca": 148,
+    "vazaoMinimaM3h": 5,
+    "vazaoMaximaM3h": 25,
+    "coeficientesCurva": {
+      "a": -0.22,
+      "b": -0.45,
+      "c": 150
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 5,
+        "alturaMca": 142
+      },
+      {
+        "vazaoM3h": 12,
+        "alturaMca": 113
+      },
+      {
+        "vazaoM3h": 18,
+        "alturaMca": 71
+      },
+      {
+        "vazaoM3h": 23.5,
+        "alturaMca": 18
+      },
+      {
+        "vazaoM3h": 25,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 16,
+    "alturaBepMca": 86,
+    "rendimentoMaximoPct": 75,
+    "caracteristicas": [
+      "Elevada vazão (até 25 m³/h) para abastecimento coletivo e fazendas",
+      "Descarga roscada de 3 polegadas",
+      "Motor trifásico rebobinável em banho de água"
+    ],
+    "precoAproximadoBrl": 6800,
+    "linkManual": "https://bombasleao.com.br"
+  },
+  {
+    "id": "altri-inox-4al05-05cv",
+    "fabricante": "Altri",
+    "modelo": "AL-405 (1/2 CV) 100% Inox 4\"",
+    "tipo": "submersivel",
+    "potenciaCv": 0.5,
+    "potenciaKw": 0.37,
+    "tensao": "220V Monofásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa",
+    "bocalRecalque": "1\"",
+    "alturaMaximaMca": 48,
+    "vazaoMinimaM3h": 0.3,
+    "vazaoMaximaM3h": 2.6,
+    "coeficientesCurva": {
+      "a": -6.5,
+      "b": -1.8,
+      "c": 49
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.3,
+        "alturaMca": 48
+      },
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 40
+      },
+      {
+        "vazaoM3h": 1.8,
+        "alturaMca": 24
+      },
+      {
+        "vazaoM3h": 2.6,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 1.3,
+    "alturaBepMca": 34,
+    "rendimentoMaximoPct": 63,
+    "caracteristicas": [
+      "Construção integral em aço inoxidável 304 com alta resistência à corrosão",
+      "Selo mecânico especial em carbeto de silício",
+      "Baixo consumo energético e excelente vida útil"
+    ],
+    "precoAproximadoBrl": 1390,
+    "linkManual": "https://altribombas.com.br"
+  },
+  {
+    "id": "altri-inox-4al10-10cv",
+    "fabricante": "Altri",
+    "modelo": "AL-410 (1.0 CV) 100% Inox 4\"",
+    "tipo": "submersivel",
+    "potenciaCv": 1,
+    "potenciaKw": 0.75,
+    "tensao": "220V Monofásico ou Trifásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa",
+    "bocalRecalque": "1.1/4\"",
+    "alturaMaximaMca": 82,
+    "vazaoMinimaM3h": 0.6,
+    "vazaoMaximaM3h": 4,
+    "coeficientesCurva": {
+      "a": -4.8,
+      "b": -1.2,
+      "c": 83
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.6,
+        "alturaMca": 81
+      },
+      {
+        "vazaoM3h": 1.8,
+        "alturaMca": 65
+      },
+      {
+        "vazaoM3h": 3,
+        "alturaMca": 36
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 2.2,
+    "alturaBepMca": 56,
+    "rendimentoMaximoPct": 66,
+    "caracteristicas": [
+      "Carcaça, difusores e rotores 100% em aço inox",
+      "Totalmente isenta de contaminação por ferrugem na água",
+      "Indicada para água mineral e processos agroindustriais"
+    ],
+    "precoAproximadoBrl": 1950,
+    "linkManual": "https://altribombas.com.br"
+  },
+  {
+    "id": "altri-inox-4al15-15cv",
+    "fabricante": "Altri",
+    "modelo": "AL-415 (1.5 CV) Inox Alta Pressão",
+    "tipo": "submersivel",
+    "potenciaCv": 1.5,
+    "potenciaKw": 1.1,
+    "tensao": "220V Monofásico ou Trifásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa",
+    "bocalRecalque": "1.1/4\"",
+    "alturaMaximaMca": 104,
+    "vazaoMinimaM3h": 0.8,
+    "vazaoMaximaM3h": 5.2,
+    "coeficientesCurva": {
+      "a": -3.6,
+      "b": -1.5,
+      "c": 105
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.8,
+        "alturaMca": 101
+      },
+      {
+        "vazaoM3h": 2.4,
+        "alturaMca": 80
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 41
+      },
+      {
+        "vazaoM3h": 5.2,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 2.8,
+    "alturaBepMca": 70,
+    "rendimentoMaximoPct": 68,
+    "caracteristicas": [
+      "Estágios usinados a laser para máximo rendimento",
+      "Eixo estriado em inox 316 para águas levemente ácidas",
+      "Operação silenciosa e confiável"
+    ],
+    "precoAproximadoBrl": 2490,
+    "linkManual": "https://altribombas.com.br"
+  },
+  {
+    "id": "altri-inox-4al20-20cv",
+    "fabricante": "Altri",
+    "modelo": "AL-420 (2.0 CV) Inox Vazão Média",
+    "tipo": "submersivel",
+    "potenciaCv": 2,
+    "potenciaKw": 1.5,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "Submersa",
+    "bocalRecalque": "1.1/2\"",
+    "alturaMaximaMca": 120,
+    "vazaoMinimaM3h": 1,
+    "vazaoMaximaM3h": 6.8,
+    "coeficientesCurva": {
+      "a": -2.3,
+      "b": -1.6,
+      "c": 122
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 118
+      },
+      {
+        "vazaoM3h": 3.2,
+        "alturaMca": 92
+      },
+      {
+        "vazaoM3h": 5.2,
+        "alturaMca": 49
+      },
+      {
+        "vazaoM3h": 6.8,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 4,
+    "alturaBepMca": 78,
+    "rendimentoMaximoPct": 69,
+    "caracteristicas": [
+      "Conjunto hidráulico de precisão para poços profundos",
+      "Acoplamento universal NEMA 4 polegadas",
+      "Projetada para operação contínua 24h em pivôs e estufas"
+    ],
+    "precoAproximadoBrl": 2980,
+    "linkManual": "https://altribombas.com.br"
+  },
+  {
+    "id": "altri-inox-4al30-30cv",
+    "fabricante": "Altri",
+    "modelo": "AL-430 (3.0 CV) Inox 4\"",
+    "tipo": "submersivel",
+    "potenciaCv": 3,
+    "potenciaKw": 2.2,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "Submersa",
+    "bocalRecalque": "2\"",
+    "alturaMaximaMca": 138,
+    "vazaoMinimaM3h": 1.5,
+    "vazaoMaximaM3h": 9.5,
+    "coeficientesCurva": {
+      "a": -1.4,
+      "b": -1.2,
+      "c": 140
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1.5,
+        "alturaMca": 135
+      },
+      {
+        "vazaoM3h": 4.5,
+        "alturaMca": 106
+      },
+      {
+        "vazaoM3h": 7.5,
+        "alturaMca": 52
+      },
+      {
+        "vazaoM3h": 9.5,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 5.8,
+    "alturaBepMca": 88,
+    "rendimentoMaximoPct": 71,
+    "caracteristicas": [
+      "Excelente relação pressão x vazão com bocal de 2 polegadas",
+      "Válvula de retenção interna com vedação em EPDM",
+      "Indicada para irrigação por aspersão de médio alcance"
+    ],
+    "precoAproximadoBrl": 3750,
+    "linkManual": "https://altribombas.com.br"
+  },
+  {
+    "id": "altri-centrifuga-ac10-10cv",
+    "fabricante": "Altri",
+    "modelo": "AC-10 (1.0 CV) Centrífuga Inox",
+    "tipo": "centrifuga",
+    "potenciaCv": 1,
+    "potenciaKw": 0.75,
+    "tensao": "127/220V Monofásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1.1/4\"",
+    "bocalRecalque": "1\"",
+    "alturaMaximaMca": 36,
+    "vazaoMinimaM3h": 0.5,
+    "vazaoMaximaM3h": 8,
+    "coeficientesCurva": {
+      "a": -0.52,
+      "b": -0.32,
+      "c": 36.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.5,
+        "alturaMca": 36
+      },
+      {
+        "vazaoM3h": 3,
+        "alturaMca": 30
+      },
+      {
+        "vazaoM3h": 6,
+        "alturaMca": 15
+      },
+      {
+        "vazaoM3h": 8,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 4.5,
+    "alturaBepMca": 24,
+    "rendimentoMaximoPct": 65,
+    "caracteristicas": [
+      "Bomba centrífuga de superfície com carcaça em inox estampado",
+      "Ideal para recirculação de água limpa, laticínios e cervejarias",
+      "Elevada resistência mecânica"
+    ],
+    "precoAproximadoBrl": 1420,
+    "linkManual": "https://altribombas.com.br"
+  },
+  {
+    "id": "altri-centrifuga-ac20-20cv",
+    "fabricante": "Altri",
+    "modelo": "AC-20 (2.0 CV) Centrífuga Inox",
+    "tipo": "centrifuga",
+    "potenciaCv": 2,
+    "potenciaKw": 1.5,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "1.1/2\"",
+    "bocalRecalque": "1.1/4\"",
+    "alturaMaximaMca": 48,
+    "vazaoMinimaM3h": 1,
+    "vazaoMaximaM3h": 13,
+    "coeficientesCurva": {
+      "a": -0.26,
+      "b": -0.28,
+      "c": 48.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 48
+      },
+      {
+        "vazaoM3h": 5,
+        "alturaMca": 40
+      },
+      {
+        "vazaoM3h": 9.5,
+        "alturaMca": 22
+      },
+      {
+        "vazaoM3h": 13,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 7.5,
+    "alturaBepMca": 31,
+    "rendimentoMaximoPct": 69,
+    "caracteristicas": [
+      "Bomba centrífuga sanitária em inox para transferência rápida",
+      "Motor industrial com proteção IP-55",
+      "Alta vazão para lavagem de estábulos e fertirrigação"
+    ],
+    "precoAproximadoBrl": 2150,
+    "linkManual": "https://altribombas.com.br"
+  },
+  {
+    "id": "imbil-ita-32-160-20cv",
+    "fabricante": "Imbil",
+    "modelo": "ITA 32-160 (2.0 CV) - Linha Normalizada",
+    "tipo": "centrifuga",
+    "potenciaCv": 2,
+    "potenciaKw": 1.5,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "2\"",
+    "bocalRecalque": "1.1/4\"",
+    "diametroRotorMm": 160,
+    "alturaMaximaMca": 38,
+    "vazaoMinimaM3h": 2,
+    "vazaoMaximaM3h": 15,
+    "coeficientesCurva": {
+      "a": -0.15,
+      "b": -0.25,
+      "c": 38.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 37
+      },
+      {
+        "vazaoM3h": 6,
+        "alturaMca": 31
+      },
+      {
+        "vazaoM3h": 11,
+        "alturaMca": 17
+      },
+      {
+        "vazaoM3h": 15,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 8.5,
+    "alturaBepMca": 25,
+    "rendimentoMaximoPct": 72,
+    "caracteristicas": [
+      "Bomba centrífuga monobloco normalizada ISO 2858",
+      "Carcaça robusta em ferro fundido de alta densidade",
+      "Padrão industrial pesado para irrigação e saneamento rural"
+    ],
+    "precoAproximadoBrl": 2890,
+    "linkManual": "https://imbil.com.br/produtos/ita"
+  },
+  {
+    "id": "imbil-ita-40-160-30cv",
+    "fabricante": "Imbil",
+    "modelo": "ITA 40-160 (3.0 CV) - Média Vazão",
+    "tipo": "centrifuga",
+    "potenciaCv": 3,
+    "potenciaKw": 2.2,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "2.1/2\"",
+    "bocalRecalque": "1.1/2\"",
+    "diametroRotorMm": 165,
+    "alturaMaximaMca": 42,
+    "vazaoMinimaM3h": 3,
+    "vazaoMaximaM3h": 22,
+    "coeficientesCurva": {
+      "a": -0.078,
+      "b": -0.18,
+      "c": 42.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 3,
+        "alturaMca": 41
+      },
+      {
+        "vazaoM3h": 10,
+        "alturaMca": 33
+      },
+      {
+        "vazaoM3h": 16,
+        "alturaMca": 19
+      },
+      {
+        "vazaoM3h": 22,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 13,
+    "alturaBepMca": 26,
+    "rendimentoMaximoPct": 74,
+    "caracteristicas": [
+      "Bocais flangeados de alto fluxo",
+      "Excelente rendimento hidráulico para sistemas de microaspersão",
+      "Fácil manutenção sem desacoplar tubulações (sistema Back-Pull-Out)"
+    ],
+    "precoAproximadoBrl": 3750,
+    "linkManual": "https://imbil.com.br/produtos/ita"
+  },
+  {
+    "id": "imbil-ita-50-200-50cv",
+    "fabricante": "Imbil",
+    "modelo": "ITA 50-200 (5.0 CV) - Alta Pressão",
+    "tipo": "centrifuga",
+    "potenciaCv": 5,
+    "potenciaKw": 3.7,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "2.1/2\"",
+    "bocalRecalque": "2\"",
+    "diametroRotorMm": 200,
+    "alturaMaximaMca": 62,
+    "vazaoMinimaM3h": 4,
+    "vazaoMaximaM3h": 30,
+    "coeficientesCurva": {
+      "a": -0.062,
+      "b": -0.15,
+      "c": 63
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 61
+      },
+      {
+        "vazaoM3h": 14,
+        "alturaMca": 48
+      },
+      {
+        "vazaoM3h": 22,
+        "alturaMca": 29
+      },
+      {
+        "vazaoM3h": 30,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 18,
+    "alturaBepMca": 40,
+    "rendimentoMaximoPct": 76,
+    "caracteristicas": [
+      "Caracol de alto rendimento com rotor fechado balanceado",
+      "Adequada para elevações acentuadas e adutoras longas",
+      "Motor WEG W22 Premium de alta eficiência"
+    ],
+    "precoAproximadoBrl": 5200,
+    "linkManual": "https://imbil.com.br/produtos/ita"
+  },
+  {
+    "id": "imbil-ita-50-250-75cv",
+    "fabricante": "Imbil",
+    "modelo": "ITA 50-250 (7.5 CV) - Alta Carga Hidráulica",
+    "tipo": "centrifuga",
+    "potenciaCv": 7.5,
+    "potenciaKw": 5.5,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "2.1/2\"",
+    "bocalRecalque": "2\"",
+    "diametroRotorMm": 250,
+    "alturaMaximaMca": 88,
+    "vazaoMinimaM3h": 5,
+    "vazaoMaximaM3h": 35,
+    "coeficientesCurva": {
+      "a": -0.065,
+      "b": -0.12,
+      "c": 89
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 5,
+        "alturaMca": 87
+      },
+      {
+        "vazaoM3h": 16,
+        "alturaMca": 70
+      },
+      {
+        "vazaoM3h": 26,
+        "alturaMca": 41
+      },
+      {
+        "vazaoM3h": 35,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 22,
+    "alturaBepMca": 54,
+    "rendimentoMaximoPct": 77,
+    "caracteristicas": [
+      "Pressão elevada (quase 90 mca) para morros e longas distâncias",
+      "Vedação por selo mecânico balanceado de alta durabilidade",
+      "Aplicação severa na agropecuária e indústria"
+    ],
+    "precoAproximadoBrl": 6900,
+    "linkManual": "https://imbil.com.br/produtos/ita"
+  },
+  {
+    "id": "imbil-ita-65-160-10cv",
+    "fabricante": "Imbil",
+    "modelo": "ITA 65-160 (10.0 CV) - Grande Vazão Irrigação",
+    "tipo": "centrifuga",
+    "potenciaCv": 10,
+    "potenciaKw": 7.5,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "3\"",
+    "bocalRecalque": "2.1/2\"",
+    "diametroRotorMm": 175,
+    "alturaMaximaMca": 48,
+    "vazaoMinimaM3h": 10,
+    "vazaoMaximaM3h": 60,
+    "coeficientesCurva": {
+      "a": -0.012,
+      "b": -0.08,
+      "c": 49
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 10,
+        "alturaMca": 47
+      },
+      {
+        "vazaoM3h": 28,
+        "alturaMca": 37
+      },
+      {
+        "vazaoM3h": 46,
+        "alturaMca": 20
+      },
+      {
+        "vazaoM3h": 60,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 38,
+    "alturaBepMca": 29,
+    "rendimentoMaximoPct": 80,
+    "caracteristicas": [
+      "Vazão volumétrica massiva de até 60 m³/h (60.000 L/h)",
+      "Perfeita para pivôs de irrigação e drenagem de grandes áreas",
+      "Sucção de 3 polegadas flangeada"
+    ],
+    "precoAproximadoBrl": 8400,
+    "linkManual": "https://imbil.com.br/produtos/ita"
+  },
+  {
+    "id": "imbil-ini-32-125-15cv",
+    "fabricante": "Imbil",
+    "modelo": "INI 32-125 (1.5 CV) - Centrífuga Compacta",
+    "tipo": "centrifuga",
+    "potenciaCv": 1.5,
+    "potenciaKw": 1.1,
+    "tensao": "220/380V Trifásico ou Monofásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1.1/2\"",
+    "bocalRecalque": "1.1/4\"",
+    "diametroRotorMm": 130,
+    "alturaMaximaMca": 26,
+    "vazaoMinimaM3h": 1.5,
+    "vazaoMaximaM3h": 12,
+    "coeficientesCurva": {
+      "a": -0.16,
+      "b": -0.22,
+      "c": 26.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1.5,
+        "alturaMca": 25
+      },
+      {
+        "vazaoM3h": 5,
+        "alturaMca": 21
+      },
+      {
+        "vazaoM3h": 9,
+        "alturaMca": 11
+      },
+      {
+        "vazaoM3h": 12,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 6.5,
+    "alturaBepMca": 17,
+    "rendimentoMaximoPct": 70,
+    "caracteristicas": [
+      "Construção compacta para abastecimento predial e chácaras",
+      "Baixo nível de ruído e vibração",
+      "Rotor em ferro fundido de precisão"
+    ],
+    "precoAproximadoBrl": 2150,
+    "linkManual": "https://imbil.com.br/produtos/ini"
+  },
+  {
+    "id": "imbil-ini-40-200-40cv",
+    "fabricante": "Imbil",
+    "modelo": "INI 40-200 (4.0 CV) - Média/Alta Carga",
+    "tipo": "centrifuga",
+    "potenciaCv": 4,
+    "potenciaKw": 3,
+    "tensao": "220/380V Trifásico",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "2\"",
+    "bocalRecalque": "1.1/2\"",
+    "diametroRotorMm": 200,
+    "alturaMaximaMca": 56,
+    "vazaoMinimaM3h": 3,
+    "vazaoMaximaM3h": 24,
+    "coeficientesCurva": {
+      "a": -0.09,
+      "b": -0.15,
+      "c": 56.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 3,
+        "alturaMca": 55
+      },
+      {
+        "vazaoM3h": 11,
+        "alturaMca": 43
+      },
+      {
+        "vazaoM3h": 18,
+        "alturaMca": 24
+      },
+      {
+        "vazaoM3h": 24,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 14,
+    "alturaBepMca": 36,
+    "rendimentoMaximoPct": 75,
+    "caracteristicas": [
+      "Excelente rendimento em lavouras de café e hortaliças",
+      "Eixo em aço inoxidável protegido por luva",
+      "Selo mecânico de primeira linha"
+    ],
+    "precoAproximadoBrl": 4400,
+    "linkManual": "https://imbil.com.br/produtos/ini"
+  },
+  {
+    "id": "schneider-bc91s-05cv",
+    "fabricante": "Schneider",
+    "modelo": "BC-91 S (1/2 CV) - Centrífuga",
+    "tipo": "centrifuga",
+    "potenciaCv": 0.5,
+    "potenciaKw": 0.37,
+    "tensao": "127/220V com seletor",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 110,
+    "alturaMaximaMca": 27,
+    "vazaoMinimaM3h": 0.5,
+    "vazaoMaximaM3h": 7.2,
+    "coeficientesCurva": {
+      "a": -0.42,
+      "b": -0.65,
+      "c": 27.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.5,
+        "alturaMca": 27
+      },
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 24
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 18
+      },
+      {
+        "vazaoM3h": 6,
+        "alturaMca": 9
+      },
+      {
+        "vazaoM3h": 7.2,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 3.8,
+    "alturaBepMca": 19,
+    "rendimentoMaximoPct": 62,
+    "caracteristicas": [
+      "Carcaça de ferro fundido GG-15 e rotor em alumínio/bronze",
+      "Motor WEG IP-21 com protetor térmico embutido",
+      "Padrão de confiabilidade nacional"
+    ],
+    "precoAproximadoBrl": 720,
+    "linkManual": "https://www.franklin-electric.com.br/produtos/bombas-centrifugas/bc-91-s/"
+  },
+  {
+    "id": "schneider-bc91s-075cv",
+    "fabricante": "Schneider",
+    "modelo": "BC-91 S (3/4 CV) - Centrífuga",
+    "tipo": "centrifuga",
+    "potenciaCv": 0.75,
+    "potenciaKw": 0.55,
+    "tensao": "127/220V com seletor",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 120,
+    "alturaMaximaMca": 31,
+    "vazaoMinimaM3h": 0.5,
+    "vazaoMaximaM3h": 8.5,
+    "coeficientesCurva": {
+      "a": -0.36,
+      "b": -0.45,
+      "c": 31.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.5,
+        "alturaMca": 31
+      },
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 29
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 24
+      },
+      {
+        "vazaoM3h": 6,
+        "alturaMca": 16
+      },
+      {
+        "vazaoM3h": 8.5,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 4.5,
+    "alturaBepMca": 22,
+    "rendimentoMaximoPct": 64,
+    "caracteristicas": [
+      "Excelente equilíbrio entre vazão e pressão média",
+      "Motor WEG monofásico de alto rendimento",
+      "Adequada para sítios, prédios baixos e pomares"
+    ],
+    "precoAproximadoBrl": 890,
+    "linkManual": "https://www.franklin-electric.com.br/produtos/bombas-centrifugas/bc-91-s/"
+  },
+  {
+    "id": "schneider-bc91s-10cv",
+    "fabricante": "Schneider",
+    "modelo": "BC-91 S (1.0 CV) - Centrífuga",
+    "tipo": "centrifuga",
+    "potenciaCv": 1,
+    "potenciaKw": 0.75,
+    "tensao": "127/220V ou 220/380V Trifásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1.1/4\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 128,
+    "alturaMaximaMca": 35,
+    "vazaoMinimaM3h": 1,
+    "vazaoMaximaM3h": 10.2,
+    "coeficientesCurva": {
+      "a": -0.28,
+      "b": -0.4,
+      "c": 35.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 35
+      },
+      {
+        "vazaoM3h": 3,
+        "alturaMca": 32
+      },
+      {
+        "vazaoM3h": 5,
+        "alturaMca": 27
+      },
+      {
+        "vazaoM3h": 7,
+        "alturaMca": 19
+      },
+      {
+        "vazaoM3h": 10.2,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 5.5,
+    "alturaBepMca": 24,
+    "rendimentoMaximoPct": 66,
+    "caracteristicas": [
+      "Bocal de sucção ampliado para 1.1/4 polegada",
+      "Maior vazão para irrigação contínua de hortaliças",
+      "Durabilidade comprovada"
+    ],
+    "precoAproximadoBrl": 1100,
+    "linkManual": "https://www.franklin-electric.com.br/produtos/bombas-centrifugas/bc-91-s/"
+  },
+  {
+    "id": "schneider-bc92s-15cv",
+    "fabricante": "Schneider",
+    "modelo": "BC-92 S (1.5 CV) - Alta Pressão",
+    "tipo": "centrifuga",
+    "potenciaCv": 1.5,
+    "potenciaKw": 1.1,
+    "tensao": "127/220V ou 220/380V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1.1/2\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 145,
+    "alturaMaximaMca": 44,
+    "vazaoMinimaM3h": 1,
+    "vazaoMaximaM3h": 12.5,
+    "coeficientesCurva": {
+      "a": -0.23,
+      "b": -0.35,
+      "c": 44.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 44
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 40
+      },
+      {
+        "vazaoM3h": 7,
+        "alturaMca": 32
+      },
+      {
+        "vazaoM3h": 10,
+        "alturaMca": 19
+      },
+      {
+        "vazaoM3h": 12.5,
+        "alturaMca": 4
+      }
+    ],
+    "vazaoBepM3h": 6.8,
+    "alturaBepMca": 33,
+    "rendimentoMaximoPct": 68,
+    "caracteristicas": [
+      "Indicada para grandes desníveis e longas distâncias horizontais",
+      "Sucção de 1.1/2 polegada para menor atrito",
+      "Rotor fechado de alta precisão"
+    ],
+    "precoAproximadoBrl": 1480,
+    "linkManual": "https://www.franklin-electric.com.br/produtos/bombas-centrifugas/bc-92-s/"
+  },
+  {
+    "id": "schneider-bc92s-20cv",
+    "fabricante": "Schneider",
+    "modelo": "BC-92 S (2.0 CV) - Alta Pressão",
+    "tipo": "centrifuga",
+    "potenciaCv": 2,
+    "potenciaKw": 1.5,
+    "tensao": "220/380V Trifásico ou 127/220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1.1/2\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 155,
+    "alturaMaximaMca": 52,
+    "vazaoMinimaM3h": 1,
+    "vazaoMaximaM3h": 14.2,
+    "coeficientesCurva": {
+      "a": -0.21,
+      "b": -0.3,
+      "c": 52
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 51
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 48
+      },
+      {
+        "vazaoM3h": 8,
+        "alturaMca": 39
+      },
+      {
+        "vazaoM3h": 11,
+        "alturaMca": 26
+      },
+      {
+        "vazaoM3h": 14.2,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 8,
+    "alturaBepMca": 39,
+    "rendimentoMaximoPct": 70,
+    "caracteristicas": [
+      "Alta pressão e vazão para sistemas de irrigação por aspersão",
+      "Capacidade de vencer desníveis acima de 40 metros com folga",
+      "Motor industrial WEG de alto rendimento"
+    ],
+    "precoAproximadoBrl": 1750,
+    "linkManual": "https://www.franklin-electric.com.br/produtos/bombas-centrifugas/bc-92-s/"
+  },
+  {
+    "id": "schneider-sub25-10cv",
+    "fabricante": "Schneider",
+    "modelo": "SUB 25-10 (1.0 CV) - Submersa 4\"",
+    "tipo": "submersivel",
+    "potenciaCv": 1,
+    "potenciaKw": 0.75,
+    "tensao": "220V Monofásico ou Trifásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa (Grade Inox)",
+    "bocalRecalque": "1.1/4\"",
+    "alturaMaximaMca": 84,
+    "vazaoMinimaM3h": 0.8,
+    "vazaoMaximaM3h": 4.5,
+    "coeficientesCurva": {
+      "a": -3.4,
+      "b": -2.8,
+      "c": 85
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.8,
+        "alturaMca": 82
+      },
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 68
+      },
+      {
+        "vazaoM3h": 3,
+        "alturaMca": 50
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 24
+      },
+      {
+        "vazaoM3h": 4.5,
+        "alturaMca": 6
+      }
+    ],
+    "vazaoBepM3h": 2.5,
+    "alturaBepMca": 60,
+    "rendimentoMaximoPct": 62,
+    "caracteristicas": [
+      "Multi-estágios de alta pressão para poços artesianos",
+      "Corpo e eixo em aço inoxidável AISI 304",
+      "Excelente para dessedentação animal e pivôs de pequena escala"
+    ],
+    "precoAproximadoBrl": 1890,
+    "linkManual": "https://www.franklin-electric.com.br/produtos/bombas-submersas/sub-25/"
+  },
+  {
+    "id": "schneider-msa21r-10cv",
+    "fabricante": "Schneider",
+    "modelo": "Autoaspirante MSA-21 R (1.0 CV)",
+    "tipo": "autoaspirante",
+    "potenciaCv": 1,
+    "potenciaKw": 0.75,
+    "tensao": "127/220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 125,
+    "alturaMaximaMca": 38,
+    "vazaoMinimaM3h": 0.5,
+    "vazaoMaximaM3h": 5.5,
+    "coeficientesCurva": {
+      "a": -1,
+      "b": -1.2,
+      "c": 39
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.5,
+        "alturaMca": 38
+      },
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 32
+      },
+      {
+        "vazaoM3h": 3.5,
+        "alturaMca": 22
+      },
+      {
+        "vazaoM3h": 5.5,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 2.8,
+    "alturaBepMca": 27,
+    "rendimentoMaximoPct": 58,
+    "caracteristicas": [
+      "Autoaspirante: Dispensa válvula de pé na sucção em desníveis de até 7m",
+      "Elimina ar da tubulação automaticamente",
+      "Excelente para captação em rios e tanques onde há entrada ocasional de ar"
+    ],
+    "precoAproximadoBrl": 1280,
+    "linkManual": "https://www.franklin-electric.com.br/produtos/bombas-autoaspirantes/msa-21-r/"
+  },
+  {
+    "id": "dancor-pratika-05cv",
+    "fabricante": "Dancor",
+    "modelo": "Pratika CP-4R (1/2 CV) - Centrífuga",
+    "tipo": "centrifuga",
+    "potenciaCv": 0.5,
+    "potenciaKw": 0.37,
+    "tensao": "127/220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "3/4\"",
+    "bocalRecalque": "3/4\"",
+    "diametroRotorMm": 105,
+    "alturaMaximaMca": 24,
+    "vazaoMinimaM3h": 0.4,
+    "vazaoMaximaM3h": 6,
+    "coeficientesCurva": {
+      "a": -0.55,
+      "b": -0.5,
+      "c": 24.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.4,
+        "alturaMca": 24
+      },
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 21
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 14
+      },
+      {
+        "vazaoM3h": 6,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 3.2,
+    "alturaBepMca": 17,
+    "rendimentoMaximoPct": 60,
+    "caracteristicas": [
+      "Compacta e silenciosa",
+      "Carcaça com tratamento anticorrosivo",
+      "Excelente custo-benefício para abastecimento diário"
+    ],
+    "precoAproximadoBrl": 640,
+    "linkManual": "https://www.dancor.com.br/produtos/pratika-cp-4r"
+  },
+  {
+    "id": "dancor-pratika-075cv",
+    "fabricante": "Dancor",
+    "modelo": "Pratika CP-4R (3/4 CV) - Centrífuga",
+    "tipo": "centrifuga",
+    "potenciaCv": 0.75,
+    "potenciaKw": 0.55,
+    "tensao": "127/220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 115,
+    "alturaMaximaMca": 28,
+    "vazaoMinimaM3h": 0.5,
+    "vazaoMaximaM3h": 7.5,
+    "coeficientesCurva": {
+      "a": -0.42,
+      "b": -0.45,
+      "c": 28.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.5,
+        "alturaMca": 28
+      },
+      {
+        "vazaoM3h": 2.5,
+        "alturaMca": 24
+      },
+      {
+        "vazaoM3h": 5,
+        "alturaMca": 16
+      },
+      {
+        "vazaoM3h": 7.5,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 4,
+    "alturaBepMca": 20,
+    "rendimentoMaximoPct": 62,
+    "caracteristicas": [
+      "Rotor fechado de alta precisão em Noryl",
+      "Selo mecânico resistente ao desgaste",
+      "Indicada para residências, pequenas lavouras e fontes"
+    ],
+    "precoAproximadoBrl": 810,
+    "linkManual": "https://www.dancor.com.br/produtos/pratika-cp-4r"
+  },
+  {
+    "id": "dancor-pratika-10cv",
+    "fabricante": "Dancor",
+    "modelo": "Pratika CP-4R (1.0 CV) - Centrífuga",
+    "tipo": "centrifuga",
+    "potenciaCv": 1,
+    "potenciaKw": 0.75,
+    "tensao": "127/220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 125,
+    "alturaMaximaMca": 32,
+    "vazaoMinimaM3h": 0.5,
+    "vazaoMaximaM3h": 9,
+    "coeficientesCurva": {
+      "a": -0.33,
+      "b": -0.4,
+      "c": 32.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.5,
+        "alturaMca": 32
+      },
+      {
+        "vazaoM3h": 3,
+        "alturaMca": 28
+      },
+      {
+        "vazaoM3h": 6,
+        "alturaMca": 18
+      },
+      {
+        "vazaoM3h": 9,
+        "alturaMca": 3
+      }
+    ],
+    "vazaoBepM3h": 4.8,
+    "alturaBepMca": 23,
+    "rendimentoMaximoPct": 63,
+    "caracteristicas": [
+      "Alta confiabilidade nacional",
+      "Selo mecânico de grafite/cerâmica de alta durabilidade",
+      "Fácil reposição de peças em todo o Brasil"
+    ],
+    "precoAproximadoBrl": 960,
+    "linkManual": "https://www.dancor.com.br/produtos/pratika-cp-4r"
+  },
+  {
+    "id": "dancor-ultra-d-15cv",
+    "fabricante": "Dancor",
+    "modelo": "Ultra D-15 (1.5 CV) - Média Pressão",
+    "tipo": "centrifuga",
+    "potenciaCv": 1.5,
+    "potenciaKw": 1.1,
+    "tensao": "127/220V ou 220/380V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1.1/2\"",
+    "bocalRecalque": "1.1/4\"",
+    "diametroRotorMm": 140,
+    "alturaMaximaMca": 42,
+    "vazaoMinimaM3h": 1,
+    "vazaoMaximaM3h": 13.5,
+    "coeficientesCurva": {
+      "a": -0.19,
+      "b": -0.25,
+      "c": 42.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 42
+      },
+      {
+        "vazaoM3h": 4.5,
+        "alturaMca": 37
+      },
+      {
+        "vazaoM3h": 9,
+        "alturaMca": 25
+      },
+      {
+        "vazaoM3h": 13.5,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 7.5,
+    "alturaBepMca": 30,
+    "rendimentoMaximoPct": 67,
+    "caracteristicas": [
+      "Projetada para irrigação por aspersão e gotejamento",
+      "Motor de carcaça de alumínio com dissipação térmica otimizada",
+      "Excelente desempenho em distâncias horizontais longas"
+    ],
+    "precoAproximadoBrl": 1420,
+    "linkManual": "https://www.dancor.com.br/produtos/ultra-d"
+  },
+  {
+    "id": "dancor-ultra-d-20cv",
+    "fabricante": "Dancor",
+    "modelo": "Ultra D-20 (2.0 CV) - Alta Vazão",
+    "tipo": "centrifuga",
+    "potenciaCv": 2,
+    "potenciaKw": 1.5,
+    "tensao": "220/380V Trifásico ou 127/220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "2\"",
+    "bocalRecalque": "1.1/2\"",
+    "diametroRotorMm": 155,
+    "alturaMaximaMca": 48,
+    "vazaoMinimaM3h": 1.5,
+    "vazaoMaximaM3h": 18,
+    "coeficientesCurva": {
+      "a": -0.13,
+      "b": -0.22,
+      "c": 48.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1.5,
+        "alturaMca": 48
+      },
+      {
+        "vazaoM3h": 6,
+        "alturaMca": 42
+      },
+      {
+        "vazaoM3h": 12,
+        "alturaMca": 27
+      },
+      {
+        "vazaoM3h": 18,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 10.5,
+    "alturaBepMca": 33,
+    "rendimentoMaximoPct": 69,
+    "caracteristicas": [
+      "Bocal de sucção de 2 polegadas para evitar cavitação",
+      "Indicada para transferência em açudes e abastecimento de caixas centrais",
+      "Alta robustez mecânica"
+    ],
+    "precoAproximadoBrl": 1780,
+    "linkManual": "https://www.dancor.com.br/produtos/ultra-d"
+  },
+  {
+    "id": "dancor-ds4-05cv",
+    "fabricante": "Dancor",
+    "modelo": "DS-4 05 (1/2 CV) - Submersível Poço",
+    "tipo": "submersivel",
+    "potenciaCv": 0.5,
+    "potenciaKw": 0.37,
+    "tensao": "220V Monofásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa",
+    "bocalRecalque": "1\"",
+    "alturaMaximaMca": 50,
+    "vazaoMinimaM3h": 0.4,
+    "vazaoMaximaM3h": 2.7,
+    "coeficientesCurva": {
+      "a": -6.1,
+      "b": -2,
+      "c": 51
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.4,
+        "alturaMca": 50
+      },
+      {
+        "vazaoM3h": 1.2,
+        "alturaMca": 40
+      },
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 22
+      },
+      {
+        "vazaoM3h": 2.7,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 1.4,
+    "alturaBepMca": 35,
+    "rendimentoMaximoPct": 60,
+    "caracteristicas": [
+      "Bomba submersa multiestágio econômica para poços tubulares",
+      "Corpo em aço inox e rotores em Noryl",
+      "Acompanha caixa de controle monofásica"
+    ],
+    "precoAproximadoBrl": 1190,
+    "linkManual": "https://www.dancor.com.br/produtos/ds-4"
+  },
+  {
+    "id": "anauger-800-5g",
+    "fabricante": "Anauger",
+    "modelo": "Anauger 800 5G (Vibratória)",
+    "tipo": "submersivel",
+    "potenciaCv": 0.45,
+    "potenciaKw": 0.34,
+    "tensao": "127V ou 220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa (Crivo)",
+    "bocalRecalque": "3/4\"",
+    "alturaMaximaMca": 70,
+    "vazaoMinimaM3h": 0.3,
+    "vazaoMaximaM3h": 1.9,
+    "coeficientesCurva": {
+      "a": -14.5,
+      "b": -8.2,
+      "c": 72
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.3,
+        "alturaMca": 68
+      },
+      {
+        "vazaoM3h": 0.6,
+        "alturaMca": 60
+      },
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 50
+      },
+      {
+        "vazaoM3h": 1.4,
+        "alturaMca": 35
+      },
+      {
+        "vazaoM3h": 1.9,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 1.1,
+    "alturaBepMca": 45,
+    "rendimentoMaximoPct": 42,
+    "caracteristicas": [
+      "Ideal para poços comuns (caipira/cisterna) e pequenas propriedades",
+      "Excelente pressão para enchimento de caixas elevadas",
+      "Baixo consumo elétrico (340W)"
+    ],
+    "precoAproximadoBrl": 380,
+    "linkManual": "https://www.anauger.com.br/produtos/bomba-anauger-800-5g/"
+  },
+  {
+    "id": "anauger-900-5g",
+    "fabricante": "Anauger",
+    "modelo": "Anauger 900 5G (Vibratória Alta Vazão)",
+    "tipo": "submersivel",
+    "potenciaCv": 0.6,
+    "potenciaKw": 0.45,
+    "tensao": "127V ou 220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa (Crivo)",
+    "bocalRecalque": "1\"",
+    "alturaMaximaMca": 70,
+    "vazaoMinimaM3h": 0.5,
+    "vazaoMaximaM3h": 2.3,
+    "coeficientesCurva": {
+      "a": -13.568,
+      "b": 3.705,
+      "c": 66.697
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.5,
+        "alturaMca": 66
+      },
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 55
+      },
+      {
+        "vazaoM3h": 1.5,
+        "alturaMca": 42
+      },
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 22
+      },
+      {
+        "vazaoM3h": 2.3,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 1.4,
+    "alturaBepMca": 45,
+    "rendimentoMaximoPct": 45,
+    "caracteristicas": [
+      "Maior vazão da linha vibratória Anauger (até 2.300 L/h)",
+      "Saída de 1 polegada",
+      "Ótima para abastecimento rural e pequenos pomares"
+    ],
+    "precoAproximadoBrl": 450,
+    "linkManual": "https://www.anauger.com.br/produtos/bomba-anauger-900-5g/"
+  },
+  {
+    "id": "anauger-ecco",
+    "fabricante": "Anauger",
+    "modelo": "Anauger ECCO (Econômica)",
+    "tipo": "submersivel",
+    "potenciaCv": 0.38,
+    "potenciaKw": 0.28,
+    "tensao": "127V ou 220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa (Crivo)",
+    "bocalRecalque": "3/4\"",
+    "alturaMaximaMca": 50,
+    "vazaoMinimaM3h": 0.2,
+    "vazaoMaximaM3h": 1.4,
+    "coeficientesCurva": {
+      "a": -21,
+      "b": -6,
+      "c": 51
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.2,
+        "alturaMca": 49
+      },
+      {
+        "vazaoM3h": 0.6,
+        "alturaMca": 40
+      },
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 24
+      },
+      {
+        "vazaoM3h": 1.4,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 0.8,
+    "alturaBepMca": 32,
+    "rendimentoMaximoPct": 40,
+    "caracteristicas": [
+      "Modelo ultra-econômico com consumo de 280W",
+      "Ideal para cisternas e reservatórios com desnível moderado",
+      "Fácil instalação e manuseio"
+    ],
+    "precoAproximadoBrl": 320,
+    "linkManual": "https://www.anauger.com.br/produtos/bomba-anauger-ecco/"
+  },
+  {
+    "id": "anauger-solar-r100",
+    "fabricante": "Anauger",
+    "modelo": "Solar R100 (Energia Solar DC)",
+    "tipo": "solar",
+    "potenciaCv": 0.35,
+    "potenciaKw": 0.25,
+    "tensao": "DC (Placas Solares 100W a 300W)",
+    "fase": "Solar DC (24V/48V/110V)",
+    "bocalSuccao": "Submersa (Crivo)",
+    "bocalRecalque": "3/4\"",
+    "alturaMaximaMca": 40,
+    "vazaoMinimaM3h": 0.2,
+    "vazaoMaximaM3h": 1.2,
+    "coeficientesCurva": {
+      "a": -22,
+      "b": -8,
+      "c": 42
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.2,
+        "alturaMca": 40
+      },
+      {
+        "vazaoM3h": 0.5,
+        "alturaMca": 33
+      },
+      {
+        "vazaoM3h": 0.8,
+        "alturaMca": 22
+      },
+      {
+        "vazaoM3h": 1.2,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 0.6,
+    "alturaBepMca": 28,
+    "rendimentoMaximoPct": 44,
+    "caracteristicas": [
+      "Alimentação 100% fotovoltaica direta sem necessidade de baterias",
+      "Ideal para bebedouros de gado isolados no pasto e semiárido",
+      "Driver integrado com proteção contra funcionamento a seco"
+    ],
+    "precoAproximadoBrl": 1650,
+    "linkManual": "https://www.anauger.com.br/produtos/anauger-solar-r100/"
+  },
+  {
+    "id": "anauger-solar-p100",
+    "fabricante": "Anauger",
+    "modelo": "Solar P100 (Energia Solar Poço Profundo)",
+    "tipo": "solar",
+    "potenciaCv": 0.5,
+    "potenciaKw": 0.37,
+    "tensao": "DC (Painéis Solares 250W a 500W)",
+    "fase": "Solar DC (24V/48V/110V)",
+    "bocalSuccao": "Submersa",
+    "bocalRecalque": "3/4\"",
+    "alturaMaximaMca": 65,
+    "vazaoMinimaM3h": 0.2,
+    "vazaoMaximaM3h": 1.6,
+    "coeficientesCurva": {
+      "a": -20.5,
+      "b": -7.5,
+      "c": 66
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.2,
+        "alturaMca": 63
+      },
+      {
+        "vazaoM3h": 0.8,
+        "alturaMca": 46
+      },
+      {
+        "vazaoM3h": 1.2,
+        "alturaMca": 28
+      },
+      {
+        "vazaoM3h": 1.6,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 0.9,
+    "alturaBepMca": 42,
+    "rendimentoMaximoPct": 46,
+    "caracteristicas": [
+      "Maior capacidade de pressão na linha solar fotovoltaica",
+      "Operação contínua sob irradiação solar de 5 a 6 horas diárias",
+      "Zero custo mensal de energia elétrica"
+    ],
+    "precoAproximadoBrl": 2190,
+    "linkManual": "https://www.anauger.com.br/produtos/anauger-solar-p100/"
+  },
+  {
+    "id": "thebe-th16-10cv",
+    "fabricante": "Thebe",
+    "modelo": "TH-16 (1.0 CV) - Centrífuga",
+    "tipo": "centrifuga",
+    "potenciaCv": 1,
+    "potenciaKw": 0.75,
+    "tensao": "127/220V ou 220/380V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1.1/2\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 135,
+    "alturaMaximaMca": 36,
+    "vazaoMinimaM3h": 1,
+    "vazaoMaximaM3h": 11.5,
+    "coeficientesCurva": {
+      "a": -0.24,
+      "b": -0.35,
+      "c": 36.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 36
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 31
+      },
+      {
+        "vazaoM3h": 8,
+        "alturaMca": 18
+      },
+      {
+        "vazaoM3h": 11.5,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 6,
+    "alturaBepMca": 25,
+    "rendimentoMaximoPct": 65,
+    "caracteristicas": [
+      "Bomba monobloco para uso geral e irrigação",
+      "Rotor em alumínio/bronze e corpo em ferro fundido",
+      "Elevada confiabilidade mecânica"
+    ],
+    "precoAproximadoBrl": 1150,
+    "linkManual": "https://www.thebe.com.br/produtos/th-16"
+  },
+  {
+    "id": "thebe-th16-20cv",
+    "fabricante": "Thebe",
+    "modelo": "TH-16 (2.0 CV) - Alta Vazão",
+    "tipo": "centrifuga",
+    "potenciaCv": 2,
+    "potenciaKw": 1.5,
+    "tensao": "220/380V Trifásico ou 127/220V",
+    "fase": "Trifásico 220/380V",
+    "bocalSuccao": "2\"",
+    "bocalRecalque": "1.1/2\"",
+    "diametroRotorMm": 160,
+    "alturaMaximaMca": 48,
+    "vazaoMinimaM3h": 2,
+    "vazaoMaximaM3h": 22,
+    "coeficientesCurva": {
+      "a": -0.08,
+      "b": -0.25,
+      "c": 49
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 48
+      },
+      {
+        "vazaoM3h": 8,
+        "alturaMca": 42
+      },
+      {
+        "vazaoM3h": 14,
+        "alturaMca": 31
+      },
+      {
+        "vazaoM3h": 18,
+        "alturaMca": 18
+      },
+      {
+        "vazaoM3h": 22,
+        "alturaMca": 4
+      }
+    ],
+    "vazaoBepM3h": 12,
+    "alturaBepMca": 35,
+    "rendimentoMaximoPct": 72,
+    "caracteristicas": [
+      "Sucção ampla de 2 polegadas para evitar cavitação com vazões elevadas",
+      "Perfeita para sistemas de irrigação por canhão, microaspersão e gotejamento",
+      "Rotor de bronze e carcaça robusta"
+    ],
+    "precoAproximadoBrl": 2200,
+    "linkManual": "https://www.thebe.com.br/produtos/th-16"
+  },
+  {
+    "id": "thebe-tsb40-10cv",
+    "fabricante": "Thebe",
+    "modelo": "TSB-40 (1.0 CV) - Submersa Inox 4\"",
+    "tipo": "submersivel",
+    "potenciaCv": 1,
+    "potenciaKw": 0.75,
+    "tensao": "220V Monofásico ou Trifásico",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "Submersa",
+    "bocalRecalque": "1.1/4\"",
+    "alturaMaximaMca": 72,
+    "vazaoMinimaM3h": 0.6,
+    "vazaoMaximaM3h": 4.2,
+    "coeficientesCurva": {
+      "a": -3.8,
+      "b": -1.5,
+      "c": 73
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.6,
+        "alturaMca": 71
+      },
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 54
+      },
+      {
+        "vazaoM3h": 3.2,
+        "alturaMca": 29
+      },
+      {
+        "vazaoM3h": 4.2,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 2.4,
+    "alturaBepMca": 48,
+    "rendimentoMaximoPct": 64,
+    "caracteristicas": [
+      "Bomba submersa para poços de 4 polegadas com carcaça em inox",
+      "Excelente desempenho para desníveis médios e abastecimento rural",
+      "Motor com proteção térmica"
+    ],
+    "precoAproximadoBrl": 1690,
+    "linkManual": "https://www.thebe.com.br/produtos/tsb-40"
+  },
+  {
+    "id": "eletroplas-qb60-05cv",
+    "fabricante": "Eletroplas",
+    "modelo": "Periférica QB-60 (1/2 CV)",
+    "tipo": "periferica",
+    "potenciaCv": 0.5,
+    "potenciaKw": 0.37,
+    "tensao": "127V ou 220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 65,
+    "alturaMaximaMca": 35,
+    "vazaoMinimaM3h": 0.2,
+    "vazaoMaximaM3h": 2.1,
+    "coeficientesCurva": {
+      "a": -2.091,
+      "b": -12.074,
+      "c": 36.611
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.2,
+        "alturaMca": 34
+      },
+      {
+        "vazaoM3h": 0.6,
+        "alturaMca": 29
+      },
+      {
+        "vazaoM3h": 1,
+        "alturaMca": 22
+      },
+      {
+        "vazaoM3h": 1.5,
+        "alturaMca": 14
+      },
+      {
+        "vazaoM3h": 2.1,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 0.9,
+    "alturaBepMca": 24,
+    "rendimentoMaximoPct": 48,
+    "caracteristicas": [
+      "Alta pressão com baixo consumo elétrico para vazões baixas",
+      "Rotor periférico em latão bronzeado",
+      "Econômica para pressurização residencial e cisternas rasas"
+    ],
+    "precoAproximadoBrl": 260,
+    "linkManual": "https://www.eletroplas.com.br/produtos/qb-60"
+  },
+  {
+    "id": "eletroplas-ics50a-05cv",
+    "fabricante": "Eletroplas",
+    "modelo": "ICS-50A (1/2 CV) - Centrífuga Standard",
+    "tipo": "centrifuga",
+    "potenciaCv": 0.5,
+    "potenciaKw": 0.37,
+    "tensao": "127/220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 108,
+    "alturaMaximaMca": 22,
+    "vazaoMinimaM3h": 0.5,
+    "vazaoMaximaM3h": 5.8,
+    "coeficientesCurva": {
+      "a": -0.4,
+      "b": -1.3,
+      "c": 22.88
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.5,
+        "alturaMca": 22
+      },
+      {
+        "vazaoM3h": 2,
+        "alturaMca": 19
+      },
+      {
+        "vazaoM3h": 4,
+        "alturaMca": 11
+      },
+      {
+        "vazaoM3h": 5.8,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 3,
+    "alturaBepMca": 15,
+    "rendimentoMaximoPct": 58,
+    "caracteristicas": [
+      "Modelo de entrada com carcaça em ferro fundido",
+      "Adequada para pequenas distâncias e bombeamento residencial",
+      "Manutenção simples e econômica"
+    ],
+    "precoAproximadoBrl": 490,
+    "linkManual": "https://www.eletroplas.com.br/produtos/ics-50a"
+  },
+  {
+    "id": "eletroplas-ics100-10cv",
+    "fabricante": "Eletroplas",
+    "modelo": "ICS-100 (1.0 CV) - Centrífuga Média",
+    "tipo": "centrifuga",
+    "potenciaCv": 1,
+    "potenciaKw": 0.75,
+    "tensao": "127/220V",
+    "fase": "Monofásico 127/220V",
+    "bocalSuccao": "1\"",
+    "bocalRecalque": "1\"",
+    "diametroRotorMm": 125,
+    "alturaMaximaMca": 30,
+    "vazaoMinimaM3h": 0.5,
+    "vazaoMaximaM3h": 8.5,
+    "coeficientesCurva": {
+      "a": -0.38,
+      "b": -0.35,
+      "c": 30.5
+    },
+    "pontosCurva": [
+      {
+        "vazaoM3h": 0.5,
+        "alturaMca": 30
+      },
+      {
+        "vazaoM3h": 3,
+        "alturaMca": 26
+      },
+      {
+        "vazaoM3h": 6,
+        "alturaMca": 14
+      },
+      {
+        "vazaoM3h": 8.5,
+        "alturaMca": 2
+      }
+    ],
+    "vazaoBepM3h": 4.5,
+    "alturaBepMca": 21,
+    "rendimentoMaximoPct": 62,
+    "caracteristicas": [
+      "Bomba monobloco com protetor térmico no motor",
+      "Boa vazão para abastecimento de caixas e tanques",
+      "Excelente custo de aquisição"
+    ],
+    "precoAproximadoBrl": 780,
+    "linkManual": "https://www.eletroplas.com.br/produtos/ics-100"
+  }
+]

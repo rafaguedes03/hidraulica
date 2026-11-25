@@ -1,99 +1,121 @@
-# 💧 HidroCalc PWA - Sistema de Dimensionamento de Bombas Hidráulicas
+# HidroCalc
 
-> **Aplicação Web Progressiva (PWA) Offline-First** para dimensionamento hidráulico de precisão, cálculo de Altura Manométrica Total (HMT), perdas de carga contínuas e localizadas, estimativa de potência de motores e seleção inteligente de bombas comerciais (Schneider, Dancor, Anauger, Thebe, Eletroplas).
+Aplicativo web instalável (PWA) que ajuda produtores rurais e técnicos a escolher a bomba d'água certa. A pessoa informa a vazão, as alturas e a tubulação; o app calcula a altura manométrica, a potência do motor e lista as bombas do catálogo que atendem. O cálculo roda no aparelho e funciona sem internet.
 
----
+## O que o app faz
 
-## 🌟 Funcionalidades Principais
+- **Modo simples**: três blocos (água, alturas, tubulação), com conexões típicas já consideradas e escolha entre bomba de superfície e bomba submersa de poço.
+- **Modo técnico**: sucção e recalque separados, conexões peça a peça, rendimentos, altitude e tarifa de energia.
+- **Resultado**: potência do motor com folga de segurança, composição da altura manométrica, avisos de sucção e de velocidade, bombas compatíveis com a curva H × Q e o ponto de trabalho.
+- **Memorial de cálculo em PDF** para guardar ou levar à revenda.
+- **Catálogo** com busca por marca, modelo e tipo.
 
-1. **⚡ Offline-First Real (PWA):**
-   - Funciona 100% no campo sem sinal de internet graças ao Service Worker e cache local.
-   - Pode ser instalado diretamente no celular (Android / iOS) ou computador como um app nativo.
+## Como rodar
 
-2. **📐 Motor de Engenharia Hidráulica:**
-   - **Perda de Carga Contínua:** Fórmula de Hazen-Williams para múltiplos materiais (PVC $C=140$, PEAD $C=140$, Aço Galvanizado $C=125$, Ferro $C=100$).
-   - **Perdas Localizadas ($L_{eq}$):** Tabela da NBR 5626 com cálculo automático de curvas 90°/45°, válvulas de pé com crivo, válvulas de retenção e registros.
-   - **Verificação de Velocidades:** Semáforo de alerta para velocidades na sucção ($0.7 \sim 1.5\text{ m/s}$) e no recalque ($1.0 \sim 2.2\text{ m/s}$) para evitar cavitação e golpe de aríete.
-   - **Cálculo de Potência:** Potência hidráulica ($CV$ e $kW$), potência no eixo com rendimento e sugestão do motor elétrico comercial padronizado.
+Requisitos: Node.js 20 ou mais novo. MySQL é opcional.
 
-3. **📊 Curva da Bomba $\times$ Curva da Instalação ($H \times Q$):**
-   - Gráfico interativo que cruza a equação da bomba $H(Q) = aQ^2 + bQ + c$ com a curva de perdas do sistema $H_{sis}(Q) = H_{geom} + kQ^{1.852}$, identificando o **Ponto de Operação Real** e o rendimento ($\eta$).
-
-4. **🎯 Dois Modos de Uso:**
-   - **Modo Guiado (Produtor Rural):** Assistente com 4 cenários práticos (Abastecimento Doméstico/Sítio, Irrigação Agrícola por gotejamento/aspersão, Bebedouro de Animais/Gado e Sistema Solar Fotovoltaico).
-   - **Modo Técnico (Engenheiro/Técnico):** Controle milimétrico de diâmetros, materiais, cotas, perdas singulares e rendimentos de máquina.
-
-5. **📄 Emissão de Laudo Técnico em PDF:**
-   - Geração de memorial de cálculo oficial em PDF formatado com dados do produtor, tabela detalhada de perdas, indicação da motobomba e espaço para assinaturas.
-
-6. **🔍 Catálogo Integrado com Busca:**
-   - Consulta a modelos comerciais com dados de vazão máxima, altura máxima, potência, tensão, conexões e links para manuais técnicos.
-
----
-
-## 🚀 Como Executar o Projeto
-
-### 1. Pré-requisitos
-- Node.js instalado (v18+)
-- (Opcional) MySQL / XAMPP se desejar rodar a API de backend
-
-### 2. Rodar o Frontend (PWA)
 ```bash
+# Frontend (http://localhost:5173)
 cd frontend
+npm install
 npm run dev
-```
-O app abrirá em `http://localhost:5173`.
 
-### 3. Rodar o Backend (API REST Node.js + MySQL)
+# Testes do motor de cálculo
+npm test
+
+# Versão de produção (gera frontend/dist com o service worker)
+npm run build
+npm run preview
+```
+
+O modo offline só existe na versão de produção (`npm run build`). Em desenvolvimento o service worker fica desligado para não servir arquivos antigos.
+
+### Hospedar em uma porta só (app + API)
+
+```bash
+npm run setup     # só na primeira vez: instala frontend e backend
+npm start         # gera frontend/dist e sobe tudo em http://localhost:3001
+```
+
+O backend entrega o app pronto e a API no mesmo endereço. Não precisa de MySQL: sem banco, o catálogo vem de `catalog.json`. No Windows, dá para usar o `iniciar.bat` com dois cliques.
+
+Para alguém de fora da sua rede acessar, use um túnel HTTPS (o modo offline e a instalação só funcionam em HTTPS):
+
+```bash
+cloudflared tunnel --url http://localhost:3001
+```
+
+### Backend com MySQL (opcional)
+
 ```bash
 cd backend
-npm run dev
-```
-A API rodará em `http://localhost:3001`.
-
-*(Nota: O frontend funciona de forma autônoma e completa mesmo sem o backend estar rodando).*
-
----
-
-## 🗄️ Estrutura de Pastas
-
-```
-hidraulica/
-├── frontend/
-│   ├── src/
-│   │   ├── engine/                # Motor de cálculo hidráulico
-│   │   │   ├── types.ts           # Definição de tipos TypeScript
-│   │   │   ├── hydraulicCalculator.ts # Hazen-Williams, velocidades e HMT
-│   │   │   ├── materialsAndFittings.ts # Tubos, rugosidades e Leq NBR 5626
-│   │   │   ├── pumpCatalogData.ts # Catálogo de bombas comerciais brasileiras
-│   │   │   └── pumpMatcher.ts     # Ranqueamento e ponto de trabalho
-│   │   ├── components/            # Componentes de interface
-│   │   │   ├── Header.tsx         # Barra superior com status PWA e modos
-│   │   │   ├── HydraulicVisualizer.tsx # Diagrama esquemático animado em SVG
-│   │   │   ├── QuickWizard.tsx    # Assistente rápido para produtores
-│   │   │   ├── TechnicalForm.tsx  # Formulário técnico avançado
-│   │   │   ├── FittingSelectorModal.tsx # Seletor visual de conexões
-│   │   │   ├── PumpCurveChart.tsx # Gráfico de curva característica H x Q
-│   │   │   ├── ResultsPanel.tsx   # Painel de resultados e ranking de bombas
-│   │   │   ├── ReportModal.tsx    # Gerador de relatório PDF (jsPDF)
-│   │   │   └── CatalogExplorer.tsx # Explorador do catálogo de bombas
-│   │   ├── App.tsx                # Aplicação principal reativa
-│   │   └── index.css              # Design system Tailwind v4 + Dark Glass
-│   ├── vite.config.ts             # Configuração do Vite + PWA Service Worker
-│   └── package.json
-├── backend/
-│   ├── src/
-│   │   ├── controllers/           # Controllers REST
-│   │   ├── database/              # Conexão MySQL, schema.sql e seed.js
-│   │   └── server.js              # Servidor Express com fallback offline
-│   └── package.json
-└── README.md
+npm install
+cp .env.example .env        # ajuste usuário e senha do MySQL
+mysql -u root -p < src/database/schema.sql
+npm run seed                # grava o catálogo no banco
+npm run dev                 # http://localhost:3001
 ```
 
----
+Se o banco já existia de uma versão anterior, rode antes `src/database/migracao_001.sql`.
 
-## 📚 Referências Técnicas
-- **NBR 5626:** Instalação predial de água fria.
-- **Porto, R. M.:** *Hidráulica Básica*, EESC-USP.
-- **Macintyre, A. J.:** *Bombas e Instalações de Bombeamento*, LTC.
-- **Catálogos Oficiais:** Franklin Electric / Schneider, Dancor, Anauger, Thebe.
+| Rota | O que faz |
+| --- | --- |
+| `GET /api/bombas` | Catálogo no formato usado pelo app: `{ origem, bombas }`. Sem MySQL, responde com `catalog.json`. |
+| `POST /api/bombas` | Cadastra ou atualiza uma bomba. Exige o cabeçalho `x-admin-token` igual ao `ADMIN_TOKEN` do `.env`. |
+| `POST /api/projetos` | Guarda um dimensionamento. |
+| `GET /api/health` | Situação da API e do banco. |
+
+## Como o catálogo funciona offline
+
+1. O app já vem com o catálogo embutido (`frontend/src/calculo/catalogoBombas.ts`).
+2. Com internet, ele busca `GET /api/bombas` e guarda a resposta no aparelho.
+3. Sem internet, usa a última versão guardada; se nunca houve, usa a embutida.
+
+O catálogo é editado em um lugar só, `catalogoBombas.ts`. Depois de editar:
+
+```bash
+npm run sync:catalog          # na raiz: gera backend/src/database/catalog.json
+cd backend && npm run seed    # atualiza o MySQL
+```
+
+**As curvas e os dados das bombas são aproximados e ainda não foram conferidos com os catálogos dos fabricantes.** Confira antes de usar o app para uma compra real.
+
+## Método de cálculo
+
+- Perda de carga contínua por Hazen-Williams: `J = 10,643 · Q^1,852 / (C^1,852 · D^4,87)`.
+- Perdas localizadas por comprimento equivalente (tabela para PVC, NBR 5626).
+- `HMT = desnível + perdas + pressão residual`.
+- Potência hidráulica `= Q · HMT / 270` (cv, com Q em m³/h). Potência no eixo `= hidráulica / rendimento da bomba`.
+- Motor comercial: potência no eixo mais folga (50% até 2 cv, 30% até 5 cv, 20% até 10 cv, 15% até 20 cv, 10% acima), arredondada para o motor comercial seguinte.
+- Energia: potência no eixo dividida pelo rendimento do motor, vezes as horas de uso.
+- Sucção: `NPSH disponível = pressão atmosférica (pela altitude) − pressão de vapor − altura de sucção − perdas na sucção`. Como o catálogo não traz o NPSH requerido de cada bomba, adota-se 3 mca para centrífugas comuns.
+- Ponto de trabalho: cruzamento da curva da bomba `H = aQ² + bQ + c` com a curva da instalação `H = H estático + k·Q^1,852`.
+
+Limitações conhecidas: Hazen-Williams é menos preciso em canos finos (abaixo de 50 mm); os diâmetros internos são os de PVC soldável e são usados também para os outros materiais; não há sucção afogada (bomba abaixo do nível da água).
+
+## Estrutura
+
+```
+frontend/src/
+  calculo/
+    tipos.ts                formato dos dados (entrada, resultado, bomba)
+    calculoHidraulico.ts    perdas de carga, HMT, NPSH, potências, energia
+    selecaoBombas.ts        curva da bomba, ponto de trabalho e ranking
+    materiaisEConexoes.ts   coeficiente C, diâmetros e comprimentos equivalentes
+    catalogoBombas.ts       as 45 bombas
+    fonteCatalogo.ts        catálogo embutido, guardado no aparelho ou da API
+    calculo.test.ts         testes automáticos das fórmulas
+  components/      telas; components/ui tem os campos, a janela e os avisos
+  lib/formatacao.ts  números no padrão brasileiro
+  index.css        cores e componentes (Tailwind v4)
+backend/src/
+  server.js, controllers/, database/ (schema.sql, seed.js, catalog.json)
+scripts/export-catalog.mjs
+```
+
+## Referências
+
+- NBR 5626: instalação predial de água fria.
+- Porto, R. M. *Hidráulica Básica*. EESC-USP.
+- Macintyre, A. J. *Bombas e Instalações de Bombeamento*. LTC.
+- Azevedo Netto, J. M. *Manual de Hidráulica*. Blucher.

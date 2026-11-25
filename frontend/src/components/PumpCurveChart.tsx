@@ -1,243 +1,107 @@
-import React, { useMemo } from 'react';
-import { 
-  ResponsiveContainer, 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ReferenceDot 
-} from 'recharts';
-import { PumpModel, HydraulicResults } from '../engine/types';
-import { getPumpHeadAtFlow } from '../engine/pumpMatcher';
-import { TrendingUp, Target } from 'lucide-react';
+import React from 'react';
+import { BombaAvaliada, ModeloBomba, ResultadoHidraulico } from '../calculo/tipos';
+import { alturaDaBombaNaVazao } from '../calculo/selecaoBombas';
+import { compacto, numero } from '../lib/formatacao';
 
-interface PumpCurveChartProps {
-  pump: PumpModel;
-  results: HydraulicResults;
-  operatingPoint: {
-    flowM3h: number;
-    headMca: number;
-    efficiencyPct: number;
-  };
+interface PropsGraficoCurva {
+  bomba: ModeloBomba;
+  resultados: ResultadoHidraulico;
+  pontoTrabalho: BombaAvaliada['pontoTrabalho'];
 }
 
-export const PumpCurveChart: React.FC<PumpCurveChartProps> = ({
-  pump,
-  results,
-  operatingPoint
-}) => {
-  const maxFlow = Math.max(pump.maxFlowM3h * 1.08, results.flowRateM3h * 1.4, 4);
-  const staticHead = results.totalGeometricHeightMca;
+/** Escolhe um passo "redondo" (1, 2, 5 × 10ⁿ) para os eixos. */
+function passoRedondo(maximo: number, divisoes: number): number {
+  const bruto = maximo / divisoes;
+  const potencia10 = Math.pow(10, Math.floor(Math.log10(bruto)));
+  const fator = bruto / potencia10;
+  return (fator <= 1 ? 1 : fator <= 2 ? 2 : fator <= 5 ? 5 : 10) * potencia10;
+}
 
-  // Generate 180 high-density interpolation points for smooth, continuous hover
-  const chartData = useMemo(() => {
-    const points: Array<{
-      flow: number;
-      pumpHead: number | null;
-      systemHead: number | null;
-    }> = [];
+const LARGURA = 340;
+const ALTURA = 230;
+const MARGEM = { topo: 12, direita: 14, base: 38, esquerda: 40 };
 
-    const numSamples = 180;
-    const step = maxFlow / numSamples;
+/**
+ * Curva da bomba × curva da instalação, desenhada em SVG puro
+ * (sem biblioteca de gráficos: abre rápido e funciona offline).
+ */
+export const PumpCurveChart: React.FC<PropsGraficoCurva> = ({ bomba, resultados, pontoTrabalho }) => {
+  const vazaoMaxDados = Math.max(bomba.vazaoMaximaM3h, resultados.vazaoM3h * 1.15, 0.5);
+  const alturaInstalacaoNoMax = resultados.alturaEstaticaMca + resultados.coeficienteKInstalacao * Math.pow(bomba.vazaoMaximaM3h, 1.852);
+  const alturaMaxDados = Math.max(alturaDaBombaNaVazao(bomba, 0), bomba.alturaMaximaMca, Math.min(alturaInstalacaoNoMax, bomba.alturaMaximaMca * 1.3), 1);
 
-    // Collect discrete steps plus exact critical points (operating point)
-    const flowValues = new Set<number>();
-    
-    for (let i = 0; i <= numSamples; i++) {
-      flowValues.add(Math.round((i * step) * 100) / 100);
-    }
-    if (operatingPoint.flowM3h > 0 && operatingPoint.flowM3h <= maxFlow) {
-      flowValues.add(Math.round(operatingPoint.flowM3h * 100) / 100);
-    }
+  const passoVazao = passoRedondo(vazaoMaxDados, 5);
+  const passoAltura = passoRedondo(alturaMaxDados, 4);
+  const vazaoMax = Math.ceil(vazaoMaxDados / passoVazao) * passoVazao;
+  const alturaMax = Math.ceil(alturaMaxDados / passoAltura) * passoAltura;
 
-    const sortedFlows = Array.from(flowValues).sort((a, b) => a - b);
+  const paraX = (q: number) => MARGEM.esquerda + (q / vazaoMax) * (LARGURA - MARGEM.esquerda - MARGEM.direita);
+  const paraY = (h: number) => ALTURA - MARGEM.base - (Math.min(h, alturaMax) / alturaMax) * (ALTURA - MARGEM.topo - MARGEM.base);
 
-    for (const q of sortedFlows) {
-      let hPump: number | null = null;
-      if (q <= pump.maxFlowM3h) {
-        hPump = Math.round(getPumpHeadAtFlow(pump, q) * 100) / 100;
-      }
+  const PONTOS = 40;
+  const pontosBomba: string[] = [];
+  const pontosInstalacao: string[] = [];
+  for (let i = 0; i <= PONTOS; i++) {
+    const qBomba = (bomba.vazaoMaximaM3h * i) / PONTOS;
+    pontosBomba.push(`${paraX(qBomba).toFixed(1)},${paraY(alturaDaBombaNaVazao(bomba, qBomba)).toFixed(1)}`);
+    const qInst = (vazaoMax * i) / PONTOS;
+    const hInst = resultados.alturaEstaticaMca + resultados.coeficienteKInstalacao * Math.pow(qInst, 1.852);
+    if (hInst <= alturaMax) pontosInstalacao.push(`${paraX(qInst).toFixed(1)},${paraY(hInst).toFixed(1)}`);
+  }
 
-      const hSys = Math.round((staticHead + results.systemCurveK * Math.pow(q, 1.852)) * 100) / 100;
+  const marcasVazao: number[] = [];
+  for (let q = 0; q <= vazaoMax + 1e-9; q += passoVazao) marcasVazao.push(Math.round(q * 1000) / 1000);
+  const marcasAltura: number[] = [];
+  for (let h = 0; h <= alturaMax + 1e-9; h += passoAltura) marcasAltura.push(Math.round(h * 1000) / 1000);
 
-      points.push({
-        flow: q,
-        pumpHead: hPump,
-        systemHead: hSys
-      });
-    }
-
-    return points;
-  }, [pump, results, operatingPoint, maxFlow, staticHead]);
-
-  // Clean custom tooltip
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (!active || !payload || !payload.length) return null;
-
-    const currentFlow = Number(label);
-    const isAtOperatingPoint = Math.abs(currentFlow - operatingPoint.flowM3h) < 0.05 && operatingPoint.flowM3h > 0;
-    
-    const pumpVal = payload.find((p: any) => p.dataKey === 'pumpHead')?.value;
-    const sysVal = payload.find((p: any) => p.dataKey === 'systemHead')?.value;
-
-    return (
-      <div className={`p-3 rounded-xl border text-xs shadow-2xl transition-all ${
-        isAtOperatingPoint 
-          ? 'bg-slate-950 border-emerald-500 ring-1 ring-emerald-500/40' 
-          : 'bg-slate-900/95 border-slate-700'
-      }`}>
-        <div className="flex items-center justify-between gap-3 text-slate-400 font-semibold mb-1 pb-1 border-b border-slate-800">
-          <span>Vazão: <strong className="text-white">{currentFlow.toFixed(2)} m³/h</strong></span>
-          {isAtOperatingPoint && (
-            <span className="text-[10px] uppercase font-bold text-emerald-400 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-800">
-              Ponto de Operação
-            </span>
-          )}
-        </div>
-
-        <div className="space-y-1">
-          {pumpVal !== null && pumpVal !== undefined && (
-            <div className="flex items-center justify-between space-x-3">
-              <span className="text-sky-400">Curva Bomba H(Q):</span>
-              <strong className="text-white font-mono">{Number(pumpVal).toFixed(2)} mca</strong>
-            </div>
-          )}
-
-          {sysVal !== null && sysVal !== undefined && (
-            <div className="flex items-center justify-between space-x-3">
-              <span className="text-amber-400">Curva Instalação:</span>
-              <strong className="text-white font-mono">{Number(sysVal).toFixed(2)} mca</strong>
-            </div>
-          )}
-
-          {isAtOperatingPoint && (
-            <div className="mt-1.5 pt-1 border-t border-slate-800 text-[11px] text-emerald-300 flex justify-between">
-              <span>Rendimento da Bomba (η):</span>
-              <strong>{operatingPoint.efficiencyPct}%</strong>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
+  const temPontoTrabalho = pontoTrabalho.vazaoM3h > 0;
+  const resumo = temPontoTrabalho
+    ? `Gráfico da curva da bomba ${bomba.modelo} e da curva da instalação. Elas se cruzam em ${numero(pontoTrabalho.vazaoM3h, 1)} metros cúbicos por hora e ${numero(pontoTrabalho.alturaMca, 1)} mca.`
+    : `Gráfico da curva da bomba ${bomba.modelo} e da curva da instalação. As curvas não se cruzam: a bomba não vence a altura.`;
 
   return (
-    <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3">
-      
-      {/* Chart Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
-        <div>
-          <div className="flex items-center space-x-1.5 text-xs font-bold text-sky-400">
-            <TrendingUp className="w-4 h-4" />
-            <span>Curva Característica: {pump.brand} {pump.model}</span>
-          </div>
-          <p className="text-[11px] text-slate-400">
-            Gráfico de alta resolução com curvas de desempenho da motobomba e perda de carga da instalação.
-          </p>
-        </div>
+    <figure className="space-y-2">
+      <svg viewBox={`0 0 ${LARGURA} ${ALTURA}`} role="img" aria-label={resumo} className="w-full max-w-xl">
+        {marcasAltura.map(h => (
+          <g key={`h${h}`}>
+            <line x1={MARGEM.esquerda} x2={LARGURA - MARGEM.direita} y1={paraY(h)} y2={paraY(h)} stroke="var(--color-line)" strokeWidth={h === 0 ? 1.2 : 0.6} />
+            <text x={MARGEM.esquerda - 6} y={paraY(h) + 4} textAnchor="end" fontSize="11" fill="var(--color-muted)">{compacto(h)}</text>
+          </g>
+        ))}
+        {marcasVazao.map(q => (
+          <text key={`q${q}`} x={paraX(q)} y={ALTURA - MARGEM.base + 15} textAnchor="middle" fontSize="11" fill="var(--color-muted)">{compacto(q)}</text>
+        ))}
+        <text x={(MARGEM.esquerda + LARGURA - MARGEM.direita) / 2} y={ALTURA - 4} textAnchor="middle" fontSize="11" fill="var(--color-muted)">vazão (m³/h)</text>
+        <text x={11} y={(MARGEM.topo + ALTURA - MARGEM.base) / 2} textAnchor="middle" fontSize="11" fill="var(--color-muted)" transform={`rotate(-90 11 ${(MARGEM.topo + ALTURA - MARGEM.base) / 2})`}>altura (mca)</text>
 
-        {/* Operating Point Badge */}
-        <div className="flex items-center space-x-2 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg text-xs">
-          <Target className="w-3.5 h-3.5 text-emerald-400" />
-          <span className="text-slate-400">Ponto de Operação:</span>
-          <strong className="text-emerald-300 font-mono">
-            {operatingPoint.flowM3h.toFixed(1)} m³/h @ {operatingPoint.headMca.toFixed(1)} mca
-          </strong>
-          <span className="text-emerald-400 text-[11px] font-semibold">
-            (η: {operatingPoint.efficiencyPct}%)
-          </span>
-        </div>
-      </div>
+        <polyline points={pontosInstalacao.join(' ')} fill="none" stroke="var(--color-water)" strokeWidth="2.2" strokeDasharray="5 4" strokeLinecap="round" />
+        <polyline points={pontosBomba.join(' ')} fill="none" stroke="var(--color-brand)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
 
-      {/* Chart Canvas */}
-      <div className="w-full h-72 sm:h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-            
-            <XAxis 
-              dataKey="flow" 
-              type="number"
-              domain={[0, Math.ceil(maxFlow)]}
-              stroke="#64748b" 
-              fontSize={11}
-              tickCount={10}
-              label={{ value: 'Vazão Q (m³/h)', position: 'insideBottom', offset: -10, fill: '#94a3b8', fontSize: 11 }}
-            />
-            
-            <YAxis 
-              stroke="#64748b" 
-              fontSize={11}
-              label={{ value: 'Altura H (mca)', angle: -90, position: 'insideLeft', offset: 10, fill: '#94a3b8', fontSize: 11 }}
-            />
-            
-            <Tooltip content={<CustomTooltip />} />
-
-            <Legend 
-              verticalAlign="top" 
-              height={30} 
-              wrapperStyle={{ fontSize: '11px', paddingTop: '0px' }} 
-            />
-
-            {/* Pump Curve */}
-            <Line 
-              type="monotone" 
-              dataKey="pumpHead" 
-              name="Curva da Bomba H(Q)" 
-              stroke="#38bdf8" 
-              strokeWidth={2.5} 
-              dot={false}
-              isAnimationActive={false}
-              activeDot={{ r: 4, stroke: '#38bdf8', strokeWidth: 2, fill: '#ffffff' }}
-            />
-
-            {/* System Characteristic Curve */}
-            <Line 
-              type="monotone" 
-              dataKey="systemHead" 
-              name="Curva do Sistema Hsis(Q)" 
-              stroke="#f59e0b" 
-              strokeWidth={2} 
-              strokeDasharray="4 2"
-              dot={false}
-              isAnimationActive={false}
-              activeDot={{ r: 4, stroke: '#f59e0b', strokeWidth: 2, fill: '#ffffff' }}
-            />
-
-            {/* Operating Point Target Marker (reduced size by 50%) */}
-            {operatingPoint.flowM3h > 0 && (
-              <ReferenceDot
-                x={operatingPoint.flowM3h}
-                y={operatingPoint.headMca}
-                r={3.5}
-                fill="#10b981"
-                stroke="#ffffff"
-                strokeWidth={1.5}
-                label={{
-                  value: `Ponto de Operação (${operatingPoint.flowM3h.toFixed(1)} m³/h, ${operatingPoint.headMca.toFixed(1)} mca)`,
-                  position: 'top',
-                  fill: '#34d399',
-                  fontSize: 10,
-                  fontWeight: 'bold'
-                }}
-              />
-            )}
-
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Legend details */}
-      <div className="flex items-center text-[11px] text-slate-400 bg-slate-900/50 p-2 rounded-lg border border-slate-800/80">
-        <span className="flex items-center space-x-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
-          <span>Ponto Verde: Ponto de Operação na tubulação calculada.</span>
+        {/* ponto pedido */}
+        <circle cx={paraX(resultados.vazaoM3h)} cy={paraY(resultados.hmtMca)} r="4.5" fill="var(--color-surface)" stroke="var(--color-ink)" strokeWidth="1.8" />
+        {/* ponto de trabalho */}
+        {temPontoTrabalho && (
+          <circle cx={paraX(pontoTrabalho.vazaoM3h)} cy={paraY(pontoTrabalho.alturaMca)} r="5" fill="var(--color-ink)" stroke="var(--color-surface)" strokeWidth="1.5" />
+        )}
+      </svg>
+      <figcaption className="grid gap-x-4 gap-y-1 text-sm text-muted sm:grid-cols-2">
+        <span className="flex items-center gap-2">
+          <svg width="22" height="6" aria-hidden="true"><line x1="0" y1="3" x2="22" y2="3" stroke="var(--color-brand)" strokeWidth="2.6" /></svg>
+          Curva da bomba
         </span>
-      </div>
-
-    </div>
+        <span className="flex items-center gap-2">
+          <svg width="22" height="6" aria-hidden="true"><line x1="0" y1="3" x2="22" y2="3" stroke="var(--color-water)" strokeWidth="2.2" strokeDasharray="5 4" /></svg>
+          Curva da instalação
+        </span>
+        <span className="flex items-center gap-2">
+          <svg width="22" height="12" aria-hidden="true"><circle cx="11" cy="6" r="4.2" fill="var(--color-surface)" stroke="var(--color-ink)" strokeWidth="1.8" /></svg>
+          O que você pediu
+        </span>
+        <span className="flex items-center gap-2">
+          <svg width="22" height="12" aria-hidden="true"><circle cx="11" cy="6" r="4.8" fill="var(--color-ink)" /></svg>
+          Onde a bomba vai trabalhar
+        </span>
+      </figcaption>
+    </figure>
   );
 };

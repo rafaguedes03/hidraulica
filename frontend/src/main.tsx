@@ -4,14 +4,11 @@ import { registerSW } from 'virtual:pwa-register'
 import './index.css'
 import App from './App.tsx'
 
-// Register PWA Service Worker for offline support and installation prompt
+// Service worker: guarda o app no aparelho para abrir sem internet e atualiza sozinho.
 registerSW({
   immediate: true,
-  onNeedRefresh() {
-    console.log('Nova versão do HidroCalc disponível.');
-  },
   onOfflineReady() {
-    console.log('HidroCalc pronto para uso 100% offline.');
+    window.dispatchEvent(new Event('hidrocalc:offline-ready'))
   },
 })
 

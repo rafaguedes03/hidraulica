@@ -1,151 +1,129 @@
-import pool, { testConnection } from '../database/db.js';
+// Rotas da API de bombas e de projetos.
+import crypto from 'node:crypto';
+import banco, { ehErroDeConexao } from '../database/db.js';
+import { lerArquivoCatalogo, linhaParaBomba, validarBomba, COLUNAS_BOMBA, bombaParaValores } from '../database/catalog.js';
 
-// Fallback in-memory catalog when MySQL is offline
-const MOCK_BOMBAS = [
-  {
-    id: 1,
-    fabricante: 'Schneider',
-    modelo: 'BC-91 S 1/2 CV',
-    tipo: 'centrifuga',
-    potencia_cv: 0.5,
-    potencia_kw: 0.37,
-    voltagem: '127/220V',
-    fase: 'Monofásico 127/220V',
-    succao_pol: '1"',
-    recalque_pol: '1"',
-    vazao_max_m3h: 7.2,
-    altura_max_mca: 27.0,
-    coef_a: -0.42,
-    coef_b: -0.65,
-    coef_c: 27.5,
-    vazao_bep_m3h: 3.8,
-    altura_bep_mca: 19.0,
-    rendimento_max_pct: 62,
-    preco_estimado_brl: 720.00
-  },
-  {
-    id: 2,
-    fabricante: 'Anauger',
-    modelo: 'Anauger 800 5G',
-    tipo: 'submersivel',
-    potencia_cv: 0.45,
-    potencia_kw: 0.34,
-    voltagem: '127V ou 220V',
-    fase: 'Monofásico 127/220V',
-    succao_pol: 'Submersa',
-    recalque_pol: '3/4"',
-    vazao_max_m3h: 1.9,
-    altura_max_mca: 70.0,
-    coef_a: -14.5,
-    coef_b: -8.2,
-    coef_c: 72.0,
-    vazao_bep_m3h: 1.1,
-    altura_bep_mca: 45.0,
-    rendimento_max_pct: 42,
-    preco_estimado_brl: 380.00
-  }
-];
-
-export async function listPumps(req, res) {
-  const isConnected = await testConnection();
-
-  if (!isConnected) {
-    // Return mock data with a header indicating offline fallback
-    res.setHeader('X-Data-Source', 'local-fallback');
-    return res.json({
-      source: 'local-fallback',
-      message: 'Banco MySQL offline. Retornando dados locais em cache.',
-      data: MOCK_BOMBAS
-    });
-  }
-
+/**
+ * GET /api/bombas
+ * Devolve o catálogo no formato que o app usa: { origem, bombas }.
+ * Se o MySQL estiver fora do ar, responde com a cópia em arquivo (catalog.json).
+ * Filtros opcionais: ?tipo=submersivel  ?busca=dancor
+ */
+export async function listarBombas(req, res) {
   try {
-    const { tipo, fabricante_id, search } = req.query;
-    let query = `
-      SELECT b.*, f.nome as fabricante_nome, f.site as fabricante_site 
-      FROM bombas b 
-      JOIN fabricantes f ON b.fabricante_id = f.id 
-      WHERE 1=1
-    `;
-    const params = [];
+    const { tipo, busca } = req.query;
+    let consulta = `
+      SELECT b.*, f.nome AS fabricante_nome
+      FROM bombas b
+      JOIN fabricantes f ON b.fabricante_id = f.id
+      WHERE 1=1`;
+    const parametros = [];
 
     if (tipo) {
-      query += ' AND b.tipo = ?';
-      params.push(tipo);
+      consulta += ' AND b.tipo = ?';
+      parametros.push(String(tipo));
     }
-    if (fabricante_id) {
-      query += ' AND b.fabricante_id = ?';
-      params.push(fabricante_id);
+    if (busca) {
+      consulta += ' AND (b.modelo LIKE ? OR f.nome LIKE ?)';
+      const termo = `%${String(busca).slice(0, 80)}%`;
+      parametros.push(termo, termo);
     }
-    if (search) {
-      query += ' AND (b.modelo LIKE ? OR f.nome LIKE ?)';
-      params.push(`%${search}%`, `%${search}%`);
-    }
+    consulta += ' ORDER BY f.nome ASC, b.potencia_cv ASC, b.vazao_max_m3h ASC';
 
-    query += ' ORDER BY b.potencia_cv ASC, b.vazao_max_m3h ASC';
-
-    const [rows] = await pool.query(query, params);
-    return res.json({ source: 'mysql', data: rows });
-  } catch (err) {
-    console.error('Erro ao listar bombas:', err);
-    return res.status(500).json({ error: 'Erro ao consultar banco de dados' });
+    const [linhas] = await banco.query(consulta, parametros);
+    return res.json({ origem: 'mysql', bombas: linhas.map(linhaParaBomba) });
+  } catch (erro) {
+    if (!ehErroDeConexao(erro)) {
+      console.error('Erro ao listar bombas:', erro);
+      return res.status(500).json({ erro: 'Erro ao consultar o banco de dados.' });
+    }
+    try {
+      return res.json({ origem: 'arquivo', bombas: lerArquivoCatalogo() });
+    } catch (erroArquivo) {
+      console.error('MySQL fora do ar e catalog.json ilegível:', erroArquivo.message);
+      return res.status(503).json({ erro: 'Catálogo indisponível no momento.' });
+    }
   }
 }
 
-export async function createPump(req, res) {
-  const isConnected = await testConnection();
-  if (!isConnected) {
-    return res.status(503).json({ error: 'MySQL offline. Não é possível cadastrar bomba no momento.' });
+/** Só quem tem o ADMIN_TOKEN do .env pode cadastrar bombas (cabeçalho x-admin-token). */
+export function exigirAdmin(req, res, next) {
+  const esperado = process.env.ADMIN_TOKEN;
+  if (!esperado) {
+    return res.status(503).json({ erro: 'Cadastro desativado: defina ADMIN_TOKEN no .env do servidor.' });
+  }
+  const recebido = String(req.get('x-admin-token') || '');
+  // Compara os resumos (hash) em tempo constante, para não vazar o token pela demora da resposta.
+  const a = crypto.createHash('sha256').update(recebido).digest();
+  const b = crypto.createHash('sha256').update(esperado).digest();
+  if (!crypto.timingSafeEqual(a, b)) {
+    return res.status(401).json({ erro: 'Token de administrador inválido.' });
+  }
+  next();
+}
+
+/** POST /api/bombas: cadastra ou atualiza uma bomba (corpo no mesmo formato devolvido pelo GET). */
+export async function cadastrarBomba(req, res) {
+  const bomba = req.body;
+  const erros = validarBomba(bomba);
+  if (erros.length > 0) {
+    return res.status(400).json({ erro: 'Dados inválidos.', detalhes: erros });
   }
 
   try {
-    const {
-      fabricante_id, modelo, tipo, potencia_cv, potencia_kw,
-      voltagem, fase, succao_pol, recalque_pol, vazao_max_m3h,
-      altura_max_mca, coef_a, coef_b, coef_c, preco_estimado_brl, link_manual
-    } = req.body;
+    await banco.query('INSERT IGNORE INTO fabricantes (nome) VALUES (?)', [bomba.fabricante.trim()]);
+    const [[fabricante]] = await banco.query('SELECT id FROM fabricantes WHERE nome = ?', [bomba.fabricante.trim()]);
 
-    const [result] = await pool.query(
-      `INSERT INTO bombas 
-        (fabricante_id, modelo, tipo, potencia_cv, potencia_kw, voltagem, fase, succao_pol, recalque_pol, vazao_max_m3h, altura_max_mca, coef_a, coef_b, coef_c, preco_estimado_brl, link_manual)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        fabricante_id, modelo, tipo, potencia_cv, potencia_kw,
-        voltagem, fase || 'Monofásico 127/220V', succao_pol, recalque_pol,
-        vazao_max_m3h, altura_max_mca, coef_a, coef_b, coef_c,
-        preco_estimado_brl, link_manual
-      ]
+    const colunas = ['fabricante_id', ...COLUNAS_BOMBA];
+    const atualizacoes = colunas.filter(c => c !== 'codigo').map(c => `${c} = VALUES(${c})`).join(', ');
+    await banco.query(
+      `INSERT INTO bombas (${colunas.join(', ')}) VALUES (${colunas.map(() => '?').join(', ')}) ON DUPLICATE KEY UPDATE ${atualizacoes}`,
+      [fabricante.id, ...bombaParaValores(bomba)]
     );
-
-    return res.status(201).json({ message: 'Bomba cadastrada com sucesso', id: result.insertId });
-  } catch (err) {
-    console.error('Erro ao criar bomba:', err);
-    return res.status(500).json({ error: 'Erro ao inserir no banco de dados' });
+    return res.status(201).json({ mensagem: 'Bomba gravada.', id: bomba.id });
+  } catch (erro) {
+    if (ehErroDeConexao(erro)) {
+      return res.status(503).json({ erro: 'MySQL fora do ar. Tente de novo mais tarde.' });
+    }
+    console.error('Erro ao gravar bomba:', erro);
+    return res.status(500).json({ erro: 'Erro ao gravar no banco de dados.' });
   }
 }
 
-export async function saveSizingProject(req, res) {
-  const isConnected = await testConnection();
-  if (!isConnected) {
-    return res.status(503).json({ error: 'MySQL offline' });
+const texto = (valor, maximo) => (typeof valor === 'string' && valor.trim() ? valor.trim().slice(0, maximo) : null);
+const positivo = valor => (typeof valor === 'number' && Number.isFinite(valor) && valor > 0 ? valor : null);
+
+/** POST /api/projetos: guarda um dimensionamento feito no app. */
+export async function salvarDimensionamento(req, res) {
+  const corpo = req.body || {};
+  const projetoNome = texto(corpo.projeto_nome, 150);
+  const vazao = positivo(corpo.vazao_m3h);
+  const hmt = positivo(corpo.hmt_mca);
+  const potencia = positivo(corpo.potencia_cv);
+
+  if (!projetoNome || !vazao || !hmt || !potencia) {
+    return res.status(400).json({ erro: 'Informe projeto_nome, vazao_m3h, hmt_mca e potencia_cv (números maiores que zero).' });
   }
 
   try {
-    const { projeto_nome, cliente_nome, localizacao, vazao_m3h, hmt_mca, potencia_cv, bomba_selecionada_id, dados_completos } = req.body;
-
-    const [result] = await pool.query(
-      `INSERT INTO dimensionamentos_salvos 
+    let idBomba = null;
+    if (typeof corpo.bomba_codigo === 'string') {
+      const [linhas] = await banco.query('SELECT id FROM bombas WHERE codigo = ?', [corpo.bomba_codigo]);
+      idBomba = linhas[0]?.id ?? null;
+    }
+    const [resultado] = await banco.query(
+      `INSERT INTO dimensionamentos_salvos
         (projeto_nome, cliente_nome, localizacao, vazao_m3h, hmt_mca, potencia_cv, bomba_selecionada_id, dados_completos_json)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        projeto_nome, cliente_nome, localizacao, vazao_m3h,
-        hmt_mca, potencia_cv, bomba_selecionada_id, JSON.stringify(dados_completos)
-      ]
+      [projetoNome, texto(corpo.cliente_nome, 150), texto(corpo.localizacao, 150), vazao, hmt, potencia, idBomba,
+        JSON.stringify(corpo.dados_completos ?? null)]
     );
-
-    return res.status(201).json({ message: 'Projeto salvo com sucesso', id: result.insertId });
-  } catch (err) {
-    console.error('Erro ao salvar projeto:', err);
-    return res.status(500).json({ error: 'Erro ao persistir projeto' });
+    return res.status(201).json({ mensagem: 'Projeto salvo.', id: resultado.insertId });
+  } catch (erro) {
+    if (ehErroDeConexao(erro)) {
+      return res.status(503).json({ erro: 'MySQL fora do ar. Tente de novo mais tarde.' });
+    }
+    console.error('Erro ao salvar projeto:', erro);
+    return res.status(500).json({ erro: 'Erro ao salvar o projeto.' });
   }
 }

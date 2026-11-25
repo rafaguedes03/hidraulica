@@ -1,216 +1,123 @@
-import React, { useState } from 'react';
-import { PumpModel } from '../engine/types';
-import { PUMP_CATALOG } from '../engine/pumpCatalogData';
-import { 
-  X, 
-  Search, 
-  Filter, 
-  ExternalLink, 
-  Zap, 
-  Layers, 
-  DollarSign, 
-  BookOpen,
-  CheckCircle2
-} from 'lucide-react';
+/**
+ * CATÁLOGO DE BOMBAS
+ * Lista as bombas com busca por marca/modelo e filtro por tipo.
+ */
+import React, { useId, useMemo, useState } from 'react';
+import { TipoBomba } from '../calculo/tipos';
+import { EstadoCatalogo } from '../calculo/fonteCatalogo';
+import { Modal } from './ui/Modal';
+import { cv, numero } from '../lib/formatacao';
+import { ExternalLink, Search } from 'lucide-react';
 
-interface CatalogExplorerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSelectPumpForSizing?: (pump: PumpModel) => void;
+interface PropsCatalogo {
+  aberto: boolean;
+  aoFechar: () => void;
+  catalogo: EstadoCatalogo;
 }
 
-export const CatalogExplorer: React.FC<CatalogExplorerProps> = ({
-  isOpen,
-  onClose
-}) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedBrand, setSelectedBrand] = useState('all');
-  const [selectedType, setSelectedType] = useState('all');
+const TIPOS: Array<{ valor: TipoBomba | 'todos'; rotulo: string }> = [
+  { valor: 'todos', rotulo: 'Todos os tipos' },
+  { valor: 'centrifuga', rotulo: 'Centrífugas' },
+  { valor: 'submersivel', rotulo: 'Submersas' },
+  { valor: 'autoaspirante', rotulo: 'Autoaspirantes' },
+  { valor: 'periferica', rotulo: 'Periféricas' },
+  { valor: 'injetora', rotulo: 'Injetoras' },
+  { valor: 'solar', rotulo: 'Solares' }
+];
 
-  if (!isOpen) return null;
+const TEXTO_ORIGEM: Record<EstadoCatalogo['origem'], string> = {
+  embutido: 'Catálogo que vem com o app.',
+  aparelho: 'Catálogo guardado neste aparelho',
+  servidor: 'Catálogo atualizado agora pela internet.'
+};
 
-  const brands = ['all', ...Array.from(new Set(PUMP_CATALOG.map(p => p.brand)))];
-  const types = [
-    { id: 'all', label: 'Todos os Tipos' },
-    { id: 'centrifuga', label: 'Centrífugas' },
-    { id: 'submersivel', label: 'Submersíveis' },
-    { id: 'periferica', label: 'Periféricas' },
-    { id: 'autoaspirante', label: 'Autoaspirantes' },
-    { id: 'solar', label: 'Solares DC' }
-  ];
+const normalizar = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
-  const filteredPumps = PUMP_CATALOG.filter(p => {
-    const matchesSearch = 
-      p.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.features.some(f => f.toLowerCase().includes(searchTerm.toLowerCase()));
+export const CatalogExplorer: React.FC<PropsCatalogo> = ({ aberto, aoFechar, catalogo }) => {
+  const idBusca = useId();
+  const idTipo = useId();
+  const [busca, setBusca] = useState('');
+  const [tipo, setTipo] = useState<TipoBomba | 'todos'>('todos');
 
-    const matchesBrand = selectedBrand === 'all' || p.brand === selectedBrand;
-    const matchesType = selectedType === 'all' || p.type === selectedType;
+  const disponiveis = TIPOS.filter(t => t.valor === 'todos' || catalogo.bombas.some(p => p.tipo === t.valor));
 
-    return matchesSearch && matchesBrand && matchesType;
-  });
+  const filtrados = useMemo(() => {
+    const termo = normalizar(busca.trim());
+    return catalogo.bombas
+      .filter(p => tipo === 'todos' || p.tipo === tipo)
+      .filter(p => !termo || normalizar(`${p.fabricante} ${p.modelo}`).includes(termo))
+      .sort((a, b) => a.fabricante.localeCompare(b.fabricante, 'pt-BR') || a.potenciaCv - b.potenciaCv);
+  }, [catalogo.bombas, busca, tipo]);
+
+  const textoOrigem = catalogo.origem === 'aparelho' && catalogo.atualizadoEm
+    ? `${TEXTO_ORIGEM.aparelho} em ${new Date(catalogo.atualizadoEm).toLocaleDateString('pt-BR')}.`
+    : catalogo.origem === 'aparelho' ? `${TEXTO_ORIGEM.aparelho}.` : TEXTO_ORIGEM[catalogo.origem];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-      <div className="relative w-full max-w-5xl bg-slate-900 border border-sky-500/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-        
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 bg-slate-950/80 flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400">
-              <BookOpen className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-white">
-                Catálogo Técnico de Bombas Hidráulicas
-              </h3>
-              <p className="text-xs text-slate-400">
-                Base de dados de modelos comerciais disponíveis para consulta e dimensionamento offline
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Search & Filter Controls */}
-        <div className="p-4 bg-slate-950/50 border-b border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          
-          {/* Search bar */}
+    <Modal
+      aberto={aberto}
+      aoFechar={aoFechar}
+      tamanho="grande"
+      titulo="Catálogo de bombas"
+      descricao={`${catalogo.bombas.length} modelos. ${textoOrigem}`}
+    >
+      <div className="space-y-4">
+        <div className="grid gap-3 sm:grid-cols-[1fr_14rem]">
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
+            <label htmlFor={idBusca} className="sr-only">Buscar por marca ou modelo</label>
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" aria-hidden="true" />
             <input
-              type="text"
-              placeholder="Buscar modelo, marca, aplicação..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+              id={idBusca}
+              type="search"
+              value={busca}
+              onChange={e => setBusca(e.target.value)}
+              placeholder="Buscar marca ou modelo"
+              className="input pl-11"
             />
           </div>
-
-          {/* Brand Filter */}
           <div>
-            <select
-              value={selectedBrand}
-              onChange={e => setSelectedBrand(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-semibold focus:border-sky-500"
-            >
-              {brands.map(b => (
-                <option key={b} value={b}>
-                  {b === 'all' ? 'Todos os Fabricantes' : `Fabricante: ${b}`}
-                </option>
-              ))}
+            <label htmlFor={idTipo} className="sr-only">Tipo de bomba</label>
+            <select id={idTipo} value={tipo} onChange={e => setTipo(e.target.value as TipoBomba | 'todos')} className="input font-medium">
+              {disponiveis.map(t => <option key={t.valor} value={t.valor}>{t.rotulo}</option>)}
             </select>
           </div>
-
-          {/* Type Filter */}
-          <div>
-            <select
-              value={selectedType}
-              onChange={e => setSelectedType(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-semibold focus:border-sky-500"
-            >
-              {types.map(t => (
-                <option key={t.id} value={t.id}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
         </div>
 
-        {/* Pumps Grid */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredPumps.map(pump => (
-              <div
-                key={pump.id}
-                className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-sky-500/40 transition-all flex flex-col justify-between space-y-3"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase bg-slate-800 text-sky-400 border border-slate-700">
-                      {pump.brand}
-                    </span>
-                    <span className="text-xs font-bold text-emerald-400">
-                      {pump.approxPriceBrl ? `R$ ${pump.approxPriceBrl.toFixed(2)}` : 'Consulte'}
-                    </span>
-                  </div>
-
-                  <h4 className="text-sm font-bold text-white mt-2">
-                    {pump.model}
-                  </h4>
-
-                  <div className="grid grid-cols-2 gap-2 text-xs text-slate-300 mt-2 p-2 rounded-lg bg-slate-900/60 border border-slate-800/80">
-                    <div>
-                      <span className="text-slate-500">Potência: </span>
-                      <strong>{pump.powerCv} CV</strong> ({pump.powerKw} kW)
-                    </div>
-                    <div>
-                      <span className="text-slate-500">Tipo: </span>
-                      <span className="capitalize">{pump.type}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500">Vazão Máx: </span>
-                      <span>{pump.maxFlowM3h} m³/h</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500">Altura Máx: </span>
-                      <span>{pump.maxHeadMca} mca</span>
-                    </div>
-                  </div>
-
-                  <div className="text-[11px] text-slate-400 mt-2 space-y-1">
-                    {pump.features.slice(0, 2).map((f, i) => (
-                      <div key={i} className="flex items-start space-x-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-sky-400 shrink-0 mt-0.5" />
-                        <span>{f}</span>
-                      </div>
-                    ))}
-                  </div>
+        {filtrados.length === 0 ? (
+          <p className="py-8 text-center text-[15px] text-muted">
+            Nenhuma bomba encontrada. Tente outro nome ou outro tipo.
+          </p>
+        ) : (
+          <ul className="divide-y divide-line">
+            {filtrados.map(bomba => (
+              <li key={bomba.id} className="flex items-start justify-between gap-3 py-3">
+                <div className="min-w-0">
+                  <p className="text-sm text-muted">{bomba.fabricante}</p>
+                  <p className="text-[15px] font-semibold leading-snug text-ink">{bomba.modelo}</p>
+                  <p className="tabular mt-0.5 text-sm text-muted">
+                    {cv(bomba.potenciaCv)} cv, até {numero(bomba.vazaoMaximaM3h, 1)} m³/h, até {numero(bomba.alturaMaximaMca, 0)} mca
+                  </p>
                 </div>
-
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-500">
-                    Bocais: {pump.suctionPortPol} x {pump.dischargePortPol}
-                  </span>
-
-                  {pump.manualUrl && (
-                    <a
-                      href={pump.manualUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center space-x-1 text-xs font-semibold text-sky-400 hover:text-sky-300 transition-colors"
-                    >
-                      <span>Manual Técnico</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-                </div>
-
-              </div>
+                {bomba.linkManual && (
+                  <a
+                    href={bomba.linkManual}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Site do fabricante: ${bomba.fabricante} ${bomba.modelo}`}
+                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-brand hover:bg-brand-tint"
+                  >
+                    <ExternalLink className="h-5 w-5" aria-hidden="true" />
+                  </a>
+                )}
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+        )}
 
-        {/* Footer */}
-        <div className="px-6 py-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-          <span>Total de {filteredPumps.length} modelos encontrados na base</span>
-          <button
-            onClick={onClose}
-            className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium transition-colors"
-          >
-            Fechar Catálogo
-          </button>
-        </div>
-
+        <p className="text-sm text-muted">
+          Vazão e altura máximas não acontecem juntas: para escolher, use o cálculo. As curvas são aproximadas; confirme no catálogo do fabricante.
+        </p>
       </div>
-    </div>
+    </Modal>
   );
 };

@@ -10,43 +10,34 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      devOptions: {
-        enabled: true,
-        type: 'module'
-      },
-      includeAssets: ['favicon.svg', 'droplet.svg', 'pwa-icon.svg'],
+      includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'HidroCalc - Dimensionamento de Bombas Hidráulicas',
+        name: 'HidroCalc: dimensionamento de bombas',
         short_name: 'HidroCalc',
-        description: 'Aplicativo PWA para dimensionamento de bombas hidráulicas e motores no campo e indústria',
-        theme_color: '#059669',
-        background_color: '#0f172a',
+        description: "Calcule a bomba d'água certa para o seu sítio. Funciona sem internet.",
+        lang: 'pt-BR',
+        theme_color: '#1f6b3a',
+        background_color: '#f1f4ec',
         display: 'standalone',
         orientation: 'any',
         start_url: '/',
         icons: [
-          {
-            src: '/pwa-icon.svg',
-            sizes: '192x192 512x512',
-            type: 'image/svg+xml',
-            purpose: 'any'
-          },
-          {
-            src: '/pwa-icon.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml',
-            purpose: 'maskable'
-          },
-          {
-            src: '/droplet.svg',
-            sizes: 'any',
-            type: 'image/svg+xml'
-          }
+          { src: '/pwa-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: '/pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}']
+        // Tudo o que o app precisa fica guardado no aparelho na primeira visita.
+        globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
+        navigateFallbackDenylist: [/^\/api\//]
       }
     })
-  ]
+  ],
+  server: {
+    // Em desenvolvimento, /api vai para o backend local (cd backend && npm run dev).
+    proxy: {
+      '/api': 'http://localhost:3001'
+    }
+  }
 })

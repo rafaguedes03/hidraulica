@@ -1,267 +1,259 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { HydraulicInputs } from './engine/types';
-import { calculateHydraulics } from './engine/hydraulicCalculator';
-import { matchPumps } from './engine/pumpMatcher';
+/**
+ * APLICATIVO PRINCIPAL
+ * Guarda os dados digitados, roda o cálculo a cada mudança e alterna entre
+ * o formulário e o resultado. Tudo fica salvo no aparelho (localStorage),
+ * então o app reabre com os últimos dados mesmo sem internet.
+ */
+import React, { useEffect, useMemo, useState } from 'react';
+import { DadosEntrada } from './calculo/tipos';
+import { calcularHidraulica, ALTITUDE_PADRAO_M, TARIFA_PADRAO_BRL_KWH } from './calculo/calculoHidraulico';
+import { avaliarBombas } from './calculo/selecaoBombas';
+import { CONEXOES_TIPICAS_RECALQUE, CONEXOES_TIPICAS_SUCCAO } from './calculo/materiaisEConexoes';
+import { EstadoCatalogo, buscarCatalogoServidor, carregarCatalogoGuardado } from './calculo/fonteCatalogo';
 import { Header } from './components/Header';
-import { HydraulicVisualizer } from './components/HydraulicVisualizer';
-import { SimpleForm } from './components/SimpleForm';
+import { SimpleForm, DESTINOS } from './components/SimpleForm';
 import { TechnicalForm } from './components/TechnicalForm';
 import { ResultsPanel } from './components/ResultsPanel';
 import { ReportModal } from './components/ReportModal';
 import { CatalogExplorer } from './components/CatalogExplorer';
-import { GraduationCap } from 'lucide-react';
+import { Segmented } from './components/ui/Field';
+import { Modal } from './components/ui/Modal';
 
-const ZERO_INPUTS: HydraulicInputs = {
-  scenario: 'custom',
-  flowRateM3h: 0,
-  residualPressureMca: 0,
-  suctionHeight: 0,
-  suctionLength: 0,
-  suctionDiameterMm: 27.8, // 1" (32mm ext)
-  suctionMaterial: 'pvc',
-  suctionFittings: [],
-  isSubmerged: false,
-  dischargeHeight: 0,
-  dischargeLength: 0,
-  dischargeDiameterMm: 21.6, // 3/4" (25mm ext)
-  dischargeMaterial: 'pvc',
-  dischargeFittings: [],
-  pumpEfficiencyPct: 60,
-  motorEfficiencyPct: 85
+type Modo = 'simples' | 'tecnico';
+type Tema = 'claro' | 'escuro';
+type Tela = 'formulario' | 'resultado';
+
+// Chaves do que fica guardado no aparelho (localStorage).
+// v4: os campos passaram a ter nomes em português.
+const CHAVE_ENTRADAS = 'hidrocalc_entradas_v4';
+const CHAVE_MODO = 'hidrocalc_modo';
+const CHAVE_TEMA = 'hidrocalc_tema';
+
+/** Formulário em branco (com os padrões de diâmetro, material e rendimentos). */
+const ENTRADAS_VAZIAS: DadosEntrada = {
+  destino: 'reservatorio',
+  vazaoM3h: 0,
+  horasPorDia: 0,
+  pressaoResidualMca: 0,
+  alturaSuccaoM: 0,
+  comprimentoSuccaoM: 0,
+  diametroSuccaoMm: 27.8, // 1" (32 mm)
+  materialSuccao: 'pvc',
+  conexoesSuccao: [],
+  bombaSubmersa: false,
+  alturaRecalqueM: 0,
+  comprimentoRecalqueM: 0,
+  diametroRecalqueMm: 21.6, // 3/4" (25 mm)
+  materialRecalque: 'pvc',
+  conexoesRecalque: [],
+  rendimentoBombaPct: 60,
+  rendimentoMotorPct: 85,
+  usarConexoesTipicas: true,
+  altitudeM: ALTITUDE_PADRAO_M,
+  tarifaEnergiaBrlKwh: TARIFA_PADRAO_BRL_KWH
 };
 
+/** Lê um valor guardado no aparelho; se não houver (ou der erro), devolve o padrão. */
+function ler<T>(chave: string, padrao: T): T {
+  try {
+    const bruto = localStorage.getItem(chave);
+    return bruto ? (JSON.parse(bruto) as T) : padrao;
+  } catch {
+    return padrao;
+  }
+}
+
+/** Guarda um valor no aparelho. */
+function gravar(chave: string, valor: unknown) {
+  try {
+    localStorage.setItem(chave, JSON.stringify(valor));
+  } catch {
+    // armazenamento cheio ou bloqueado: o app continua funcionando sem guardar
+  }
+}
+
 export const App: React.FC = () => {
-  const [mode, setMode] = useState<'simple' | 'technical'>('simple');
-  const [view, setView] = useState<'form' | 'results'>('form');
-  
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    const saved = localStorage.getItem('hidrocalc_theme');
-    return (saved as 'dark' | 'light') || 'dark';
-  });
+  const [modo, setModo] = useState<Modo>(() => (ler<Modo>(CHAVE_MODO, 'simples') === 'tecnico' ? 'tecnico' : 'simples'));
+  const [tela, setTela] = useState<Tela>('formulario');
+  const [tema, setTema] = useState<Tema>(() => (ler<Tema>(CHAVE_TEMA, 'claro') === 'escuro' ? 'escuro' : 'claro'));
+  const [entradas, setEntradas] = useState<DadosEntrada>(() => ({ ...ENTRADAS_VAZIAS, ...ler<Partial<DadosEntrada>>(CHAVE_ENTRADAS, {}) }));
+  const [catalogo, setCatalogo] = useState<EstadoCatalogo>(() => carregarCatalogoGuardado());
+  const [relatorioAberto, setRelatorioAberto] = useState(false);
+  const [catalogoAberto, setCatalogoAberto] = useState(false);
+  const [prontoOffline, setProntoOffline] = useState(false);
+  const [confirmarLimpeza, setConfirmarLimpeza] = useState(false);
 
-  const [inputs, setInputs] = useState<HydraulicInputs>(() => {
-    const saved = localStorage.getItem('hidrocalc_inputs_v2');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return ZERO_INPUTS;
-      }
-    }
-    return ZERO_INPUTS;
-  });
-
-  const [isReportOpen, setIsReportOpen] = useState(false);
-  const [isCatalogOpen, setIsCatalogOpen] = useState(false);
-
-  // Sync theme with HTML document class
   useEffect(() => {
-    localStorage.setItem('hidrocalc_theme', theme);
-    if (theme === 'light') {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
+    gravar(CHAVE_TEMA, tema);
+    // A classe 'dark' no <html> liga as cores do tema escuro (ver index.css).
+    document.documentElement.classList.toggle('dark', tema === 'escuro');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', tema === 'escuro' ? '#16201a' : '#ffffff');
+  }, [tema]);
+
+  useEffect(() => gravar(CHAVE_ENTRADAS, entradas), [entradas]);
+  useEffect(() => gravar(CHAVE_MODO, modo), [modo]);
+
+  // Com internet, busca o catálogo mais novo; sem internet, segue com o que já está no aparelho.
+  useEffect(() => {
+    let ativo = true;
+    const atualizar = () => buscarCatalogoServidor().then(remoto => {
+      if (ativo && remoto) setCatalogo(remoto);
+    });
+    atualizar();
+    window.addEventListener('online', atualizar);
+    return () => {
+      ativo = false;
+      window.removeEventListener('online', atualizar);
+    };
+  }, []);
+
+  // Aviso único de que o app já pode ser usado sem internet.
+  useEffect(() => {
+    const aoFicarPronto = () => {
+      setProntoOffline(true);
+      window.setTimeout(() => setProntoOffline(false), 6000);
+    };
+    window.addEventListener('hidrocalc:offline-ready', aoFicarPronto);
+    return () => window.removeEventListener('hidrocalc:offline-ready', aoFicarPronto);
+  }, []);
+
+  // O botão "voltar" do celular sai dos resultados para o formulário, em vez de fechar o app.
+  useEffect(() => {
+    const aoVoltar = () => setTela('formulario');
+    window.addEventListener('popstate', aoVoltar);
+    return () => window.removeEventListener('popstate', aoVoltar);
+  }, []);
+
+  // O cálculo roda de novo sempre que um campo muda (é rápido e não precisa de internet).
+  const resultados = useMemo(() => calcularHidraulica(entradas), [entradas]);
+  const bombasAvaliadas = useMemo(() => avaliarBombas(entradas, resultados, catalogo.bombas), [entradas, resultados, catalogo.bombas]);
+
+  const trocarModo = (proximo: Modo) => {
+    if (proximo === modo) return;
+    if (proximo === 'tecnico') {
+      // Leva para o modo técnico as conexões típicas que o modo simples vinha considerando.
+      setEntradas(anterior => ({
+        ...anterior,
+        usarConexoesTipicas: false,
+        conexoesSuccao: anterior.conexoesSuccao.length > 0 ? anterior.conexoesSuccao : CONEXOES_TIPICAS_SUCCAO,
+        conexoesRecalque: anterior.conexoesRecalque.length > 0 ? anterior.conexoesRecalque : CONEXOES_TIPICAS_RECALQUE
+      }));
     } else {
-      document.documentElement.classList.remove('light');
-      document.documentElement.classList.add('dark');
+      setEntradas(anterior => {
+        // Volta a usar a pressão residual do destino escolhido no modo simples.
+        const destino = DESTINOS.find(d => d.valor === anterior.destino) ?? DESTINOS[0];
+        return { ...anterior, usarConexoesTipicas: true, destino: destino.valor, pressaoResidualMca: destino.pressaoResidual };
+      });
     }
-  }, [theme]);
+    setModo(proximo);
+  };
 
-  // Save to localStorage whenever inputs change (offline persistence)
-  useEffect(() => {
-    localStorage.setItem('hidrocalc_inputs_v2', JSON.stringify(inputs));
-  }, [inputs]);
-
-  // Real-time calculation of hydraulic results
-  const results = useMemo(() => {
-    return calculateHydraulics(inputs);
-  }, [inputs]);
-
-  // Real-time matching against catalog
-  const matchedPumps = useMemo(() => {
-    return matchPumps(inputs, results);
-  }, [inputs, results]);
-
-  const handleReset = () => {
-    if (window.confirm('Deseja limpar todos os campos preenchidos?')) {
-      setInputs(ZERO_INPUTS);
-      setView('form');
+  const voltarAoFormulario = () => {
+    if (tela === 'resultado' && window.history.state?.hidrocalc === 'resultado') {
+      window.history.back();
+    } else {
+      setTela('formulario');
     }
   };
 
-  const handleCalculate = () => {
-    setView('results');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const calcular = () => {
+    // Cria um passo no histórico para o botão voltar do celular funcionar.
+    window.history.pushState({ hidrocalc: 'resultado' }, '');
+    setTela('resultado');
+    window.scrollTo({ top: 0 });
   };
 
-  const hasCalculations = results.flowRateM3h > 0 && results.totalDynamicHeadMca > 0;
+  const limpar = () => {
+    setEntradas({ ...ENTRADAS_VAZIAS, usarConexoesTipicas: modo === 'simples' });
+    setConfirmarLimpeza(false);
+  };
 
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-200 ${
-      theme === 'light' 
-        ? 'bg-slate-50 text-slate-900 selection:bg-emerald-500 selection:text-white' 
-        : 'bg-slate-950 text-slate-100 selection:bg-sky-500 selection:text-white'
-    }`}>
-      
-      {/* Top Header */}
+    <div className="flex min-h-dvh flex-col">
       <Header
-        mode={mode}
-        setMode={setMode}
-        view={view}
-        setView={setView}
-        theme={theme}
-        setTheme={setTheme}
-        onReset={handleReset}
-        onOpenCatalog={() => setIsCatalogOpen(true)}
-        onOpenReport={() => setIsReportOpen(true)}
-        hasCalculations={hasCalculations}
+        tema={tema}
+        aoTrocarTema={() => setTema(atual => (atual === 'escuro' ? 'claro' : 'escuro'))}
+        aoAbrirCatalogo={() => setCatalogoAberto(true)}
+        aoIrParaInicio={voltarAoFormulario}
       />
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
-        
-        {/* VIEW 1: ENTRADA DE DADOS (FORMULÁRIO LIMPO) */}
-        {view === 'form' && (
-          <div className="space-y-6 max-w-3xl mx-auto animate-in fade-in duration-200">
-            
-            {mode === 'simple' ? (
-              <SimpleForm
-                inputs={inputs}
-                onChange={setInputs}
-                onCalculate={handleCalculate}
-              />
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-5 sm:pt-8">
+        {tela === 'formulario' ? (
+          <div className="space-y-4">
+            <div>
+              <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-ink sm:text-3xl">
+                Qual bomba eu preciso?
+              </h1>
+              <p className="mt-1 max-w-prose text-[15px] text-muted">
+                Informe a água, as alturas e a tubulação. O cálculo roda no aparelho, mesmo sem internet.
+              </p>
+            </div>
+
+            <Segmented<Modo>
+              rotulo="Modo de preenchimento"
+              ocultarRotulo
+              valor={modo}
+              aoAlterar={trocarModo}
+              opcoes={[
+                { valor: 'simples', rotulo: 'Simples' },
+                { valor: 'tecnico', rotulo: 'Técnico' }
+              ]}
+            />
+
+            {modo === 'simples' ? (
+              <SimpleForm entradas={entradas} aoAlterar={setEntradas} aoCalcular={calcular} aoLimpar={() => setConfirmarLimpeza(true)} />
             ) : (
-              <TechnicalForm
-                inputs={inputs}
-                results={results}
-                onChange={setInputs}
-                onCalculate={handleCalculate}
-              />
+              <TechnicalForm entradas={entradas} resultados={resultados} aoAlterar={setEntradas} aoCalcular={calcular} aoLimpar={() => setConfirmarLimpeza(true)} />
             )}
-
-            {/* Mode Switch Card Footer */}
-            <div className={`p-4 rounded-xl border flex items-center justify-between text-xs transition-colors ${
-              theme === 'light' ? 'bg-white border-slate-200' : 'glass-panel-subtle border-slate-800'
-            }`}>
-              <span className={theme === 'light' ? 'text-slate-600' : 'text-slate-400'}>
-                {mode === 'simple'
-                  ? 'Precisa detalhar sucção, conexões e materiais específicos?'
-                  : 'Deseja um formulário mais direto com poucas entradas?'}
-              </span>
-              <button
-                type="button"
-                onClick={() => setMode(mode === 'simple' ? 'technical' : 'simple')}
-                className={`font-bold transition-colors ml-2 shrink-0 ${
-                  theme === 'light' ? 'text-emerald-700 hover:text-emerald-800' : 'text-sky-400 hover:text-sky-300'
-                }`}
-              >
-                {mode === 'simple' ? 'Alternar para Modo Avançado →' : 'Alternar para Modo Simples →'}
-              </button>
-            </div>
-
+          </div>
+        ) : (
+          <div className="pb-6">
+            <ResultsPanel
+              entradas={entradas}
+              resultados={resultados}
+              bombasAvaliadas={bombasAvaliadas}
+              aoAbrirRelatorio={() => setRelatorioAberto(true)}
+              aoVoltar={voltarAoFormulario}
+            />
           </div>
         )}
-
-        {/* VIEW 2: TELA DE RESULTADOS */}
-        {view === 'results' && (
-          <div className="space-y-8 animate-in fade-in duration-200">
-            
-            {/* Dynamic Animated Hydraulic Visualizer */}
-            <section aria-label="Esquema Hidráulico Dinâmico">
-              <HydraulicVisualizer inputs={inputs} results={results} />
-            </section>
-
-            {/* Results Panel */}
-            <section aria-label="Painel de Resultados e Bombas">
-              <ResultsPanel
-                inputs={inputs}
-                results={results}
-                matchedPumps={matchedPumps}
-                onOpenReport={() => setIsReportOpen(true)}
-                onBackToForm={() => setView('form')}
-              />
-            </section>
-
-          </div>
-        )}
-
-        {/* Educational Engineering Reference Section */}
-        <section className={`p-6 rounded-2xl border text-xs space-y-3 transition-colors ${
-          theme === 'light' 
-            ? 'bg-white border-slate-200 text-slate-600 shadow-xs' 
-            : 'glass-panel-subtle border-slate-800/80 text-slate-400'
-        }`}>
-          <div className={`flex items-center space-x-2 font-bold text-sm ${
-            theme === 'light' ? 'text-slate-900' : 'text-slate-200'
-          }`}>
-            <GraduationCap className={`w-4 h-4 ${theme === 'light' ? 'text-emerald-600' : 'text-sky-400'}`} />
-            <span>Critérios Técnicos de Dimensionamento (IFNMG / NBR 5626)</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1 text-[11px] leading-relaxed">
-            <div className={`p-3 rounded-xl border ${
-              theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/50 border-slate-800'
-            }`}>
-              <strong className={`block mb-1 ${theme === 'light' ? 'text-emerald-700' : 'text-sky-300'}`}>
-                Perdas Contínuas (Hazen-Williams)
-              </strong>
-              Calcula a dissipação de energia ao longo do comprimento da tubulação em função da rugosidade do tubo.
-            </div>
-
-            <div className={`p-3 rounded-xl border ${
-              theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/50 border-slate-800'
-            }`}>
-              <strong className={`block mb-1 ${theme === 'light' ? 'text-teal-700' : 'text-emerald-300'}`}>
-                Perdas Localizadas (Leq)
-              </strong>
-              Computa perdas singulares em conexões, válvulas de pé com crivo, retenção e curvas através do método de comprimentos equivalentes.
-            </div>
-
-            <div className={`p-3 rounded-xl border ${
-              theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/50 border-slate-800'
-            }`}>
-              <strong className={`block mb-1 ${theme === 'light' ? 'text-amber-700' : 'text-amber-300'}`}>
-                Ponto de Operação Real
-              </strong>
-              Interseção matemática entre a curva característica da bomba H(Q) e a resistência do circuito Hsis(Q).
-            </div>
-          </div>
-        </section>
-
       </main>
 
-      {/* Footer */}
-      <footer className={`w-full border-t py-5 text-center text-xs transition-colors ${
-        theme === 'light' 
-          ? 'bg-white border-slate-200 text-slate-500' 
-          : 'bg-slate-950 border-slate-900 text-slate-500'
-      }`}>
-        <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div>
-            <strong className={theme === 'light' ? 'text-slate-800' : 'text-slate-300'}>
-              HidroCalc
-            </strong> — Sistema de Dimensionamento de Bombas Hidráulicas
-          </div>
-          <div className={`text-[11px] ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>
-            Plataforma técnica para apoio a produtores rurais, técnicos e engenheiros
-          </div>
-        </div>
+      <footer className="no-print mx-auto w-full max-w-3xl px-4 py-5 text-sm text-muted">
+        <p>
+          HidroCalc, projeto do IFNMG. Estimativa para apoiar a escolha da bomba; não substitui o projeto de um profissional habilitado.
+        </p>
       </footer>
 
-      {/* Report Modal */}
+      {prontoOffline && (
+        <div role="status" className="no-print fixed inset-x-4 bottom-24 z-40 mx-auto max-w-sm rounded-xl bg-ink px-4 py-3 text-center text-[15px] font-medium text-page shadow-lg">
+          Pronto: o app já funciona sem internet.
+        </div>
+      )}
+
+      <Modal
+        aberto={confirmarLimpeza}
+        aoFechar={() => setConfirmarLimpeza(false)}
+        titulo="Apagar os dados preenchidos?"
+        descricao="Os campos voltam a ficar em branco."
+        rodape={
+          <div className="flex gap-2">
+            <button type="button" onClick={() => setConfirmarLimpeza(false)} className="btn btn-secondary flex-1">Manter</button>
+            <button type="button" onClick={limpar} className="btn btn-primary flex-1">Apagar</button>
+          </div>
+        }
+      >
+        <p className="text-[15px] text-muted">O catálogo de bombas e o tema escolhido não mudam.</p>
+      </Modal>
+
       <ReportModal
-        isOpen={isReportOpen}
-        onClose={() => setIsReportOpen(false)}
-        inputs={inputs}
-        results={results}
-        matchedPumps={matchedPumps}
+        aberto={relatorioAberto}
+        aoFechar={() => setRelatorioAberto(false)}
+        entradas={entradas}
+        resultados={resultados}
+        bombasAvaliadas={bombasAvaliadas}
       />
-
-      {/* Catalog Explorer Modal */}
-      <CatalogExplorer
-        isOpen={isCatalogOpen}
-        onClose={() => setIsCatalogOpen(false)}
-      />
-
+      <CatalogExplorer aberto={catalogoAberto} aoFechar={() => setCatalogoAberto(false)} catalogo={catalogo} />
     </div>
   );
 };

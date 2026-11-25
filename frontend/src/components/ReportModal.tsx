@@ -1,302 +1,233 @@
-import React, { useState } from 'react';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import { HydraulicInputs, HydraulicResults, MatchedPump } from '../engine/types';
-import { PIPE_MATERIALS } from '../engine/materialsAndFittings';
-import { X, Download, FileText, CheckCircle2, Building2, User, Calendar } from 'lucide-react';
+/**
+ * MEMORIAL DE CÁLCULO EM PDF
+ * Monta um PDF com os dados da instalação, a HMT, as potências e as bombas
+ * indicadas. A biblioteca de PDF só é carregada quando alguém clica em baixar.
+ */
+import React, { useId, useState } from 'react';
+import { DadosEntrada, ResultadoHidraulico, BombaAvaliada } from '../calculo/tipos';
+import { MATERIAIS_TUBO, descreverConexoes } from '../calculo/materiaisEConexoes';
+import { conexoesConsideradas } from '../calculo/calculoHidraulico';
+import { Modal } from './ui/Modal';
+import { cv, numero } from '../lib/formatacao';
+import { Download } from 'lucide-react';
 
-interface ReportModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  inputs: HydraulicInputs;
-  results: HydraulicResults;
-  matchedPumps: MatchedPump[];
+interface PropsRelatorio {
+  aberto: boolean;
+  aoFechar: () => void;
+  entradas: DadosEntrada;
+  resultados: ResultadoHidraulico;
+  bombasAvaliadas: BombaAvaliada[];
 }
 
-export const ReportModal: React.FC<ReportModalProps> = ({
-  isOpen,
-  onClose,
-  inputs,
-  results,
-  matchedPumps
+const VERDE: [number, number, number] = [31, 107, 58];
+const TINTA: [number, number, number] = [21, 35, 26];
+const CINZA: [number, number, number] = [83, 99, 88];
+
+const TextField: React.FC<{ rotulo: string; valor: string; aoAlterar: (v: string) => void; exemplo: string }> = ({
+  rotulo, valor, aoAlterar, exemplo
 }) => {
-  const [clientName, setClientName] = useState('Produtor Rural / Cliente');
-  const [projectName, setProjectName] = useState('Instalação Hidráulica');
-  const [locationName, setLocationName] = useState('Fazenda / Sítio - IFNMG');
-  const [responsibleTech, setResponsibleTech] = useState('Técnico / Responsável');
+  const id = useId();
+  return (
+    <div className="space-y-1.5">
+      <label htmlFor={id} className="text-[15px] font-semibold text-ink">{rotulo}</label>
+      <input id={id} type="text" value={valor} onChange={e => aoAlterar(e.target.value)} placeholder={exemplo} className="input" />
+    </div>
+  );
+};
 
-  if (!isOpen) return null;
+export const ReportModal: React.FC<PropsRelatorio> = ({ aberto, aoFechar, entradas, resultados, bombasAvaliadas }) => {
+  const [nomeProjeto, setNomeProjeto] = useState('');
+  const [nomeCliente, setNomeCliente] = useState('');
+  const [local, setLocal] = useState('');
+  const [responsavel, setResponsavel] = useState('');
+  const [gerando, setGerando] = useState(false);
+  const [falhou, setFalhou] = useState(false);
 
-  const topPump = matchedPumps.length > 0 ? matchedPumps[0] : null;
-  const suctionMat = PIPE_MATERIALS.find(m => m.id === inputs.suctionMaterial)?.name || inputs.suctionMaterial;
-  const dischargeMat = PIPE_MATERIALS.find(m => m.id === inputs.dischargeMaterial)?.name || inputs.dischargeMaterial;
+  const compativeis = bombasAvaliadas.filter(a => a.situacao !== 'incompativel');
 
-  const handleDownloadPdf = () => {
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
+  const baixarPdf = async () => {
+    setGerando(true);
+    setFalhou(false);
+    try {
+      // Carregado só quando alguém pede o PDF: o app abre mais rápido no celular.
+      const [{ jsPDF }, { default: autoTable }] = await Promise.all([import('jspdf'), import('jspdf-autotable')]);
 
-    const primaryColor = [2, 132, 199]; // Sky 600
-    const darkColor = [15, 23, 42]; // Slate 900
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const ultimoY = () => (pdf as any).lastAutoTable.finalY as number;
+      const tituloSecao = (texto: string, y: number) => {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(11);
+        pdf.setTextColor(...TINTA);
+        pdf.text(texto, 14, y);
+      };
+      const seNaoSubmersa = (v: string) => (entradas.bombaSubmersa ? '-' : v);
+      const nomeMaterial = (id: string) => MATERIAIS_TUBO.find(m => m.id === id)?.nome ?? id;
+      const conexoes = conexoesConsideradas(entradas);
 
-    // Header Background
-    doc.setFillColor(darkColor[0], darkColor[1], darkColor[2]);
-    doc.rect(0, 0, 210, 38, 'F');
+      pdf.setFillColor(...VERDE);
+      pdf.rect(0, 0, 210, 30, 'F');
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(15);
+      pdf.setTextColor(255, 255, 255);
+      pdf.text('Memorial de cálculo: dimensionamento de bomba', 14, 14);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(9);
+      pdf.text(`HidroCalc. Emitido em ${new Date().toLocaleDateString('pt-BR')}.`, 14, 22);
 
-    // Title & Logo
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(255, 255, 255);
-    doc.text('LAUDO TÉCNICO DE DIMENSIONAMENTO HIDRÁULICO', 14, 18);
+      autoTable(pdf, {
+        startY: 36,
+        body: [
+          ['Projeto', nomeProjeto || '-', 'Cliente', nomeCliente || '-'],
+          ['Local', local || '-', 'Responsável', responsavel || '-']
+        ],
+        theme: 'plain',
+        styles: { fontSize: 9, cellPadding: 1.5, textColor: TINTA },
+        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 24 }, 2: { fontStyle: 'bold', cellWidth: 26 } }
+      });
 
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(186, 230, 253);
-    doc.text('HidroCalc PWA - Sistema Inteligente de Seleção de Bombas e Motores', 14, 25);
-    doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 14, 31);
+      tituloSecao('1. Instalação', ultimoY() + 8);
+      autoTable(pdf, {
+        startY: ultimoY() + 11,
+        head: [['', 'Sucção', 'Recalque', 'Total']],
+        body: [
+          ['Desnível', entradas.bombaSubmersa ? 'bomba submersa' : `${numero(resultados.desnivelSuccaoM, 1)} m`, `${numero(resultados.desnivelRecalqueM, 1)} m`, `${numero(resultados.desnivelTotalM, 1)} m`],
+          ['Comprimento do cano', seNaoSubmersa(`${numero(resultados.comprimentoCanoSuccaoM, 1)} m`), `${numero(resultados.comprimentoCanoRecalqueM, 1)} m`, `${numero(resultados.comprimentoCanoSuccaoM + resultados.comprimentoCanoRecalqueM, 1)} m`],
+          ['Comprimento equivalente das conexões', seNaoSubmersa(`${numero(resultados.comprimentoEquivSuccaoM, 1)} m`), `${numero(resultados.comprimentoEquivRecalqueM, 1)} m`, `${numero(resultados.comprimentoEquivSuccaoM + resultados.comprimentoEquivRecalqueM, 1)} m`],
+          ['Diâmetro interno', seNaoSubmersa(`${numero(entradas.diametroSuccaoMm, 1)} mm`), `${numero(entradas.diametroRecalqueMm, 1)} mm`, ''],
+          ['Material', seNaoSubmersa(nomeMaterial(entradas.materialSuccao)), nomeMaterial(entradas.materialRecalque), ''],
+          ['Velocidade', seNaoSubmersa(`${numero(resultados.velocidadeSuccaoMs, 2)} m/s`), `${numero(resultados.velocidadeRecalqueMs, 2)} m/s`, ''],
+          ['Perda de carga', seNaoSubmersa(`${numero(resultados.perdaSuccaoMca, 2)} mca`), `${numero(resultados.perdaRecalqueMca, 2)} mca`, `${numero(resultados.perdaTotalMca, 2)} mca`],
+          ['Pressão residual na chegada', '', '', `${numero(resultados.pressaoResidualMca, 1)} mca`],
+          ['Altura manométrica total (HMT)', '', '', `${numero(resultados.hmtMca, 1)} mca`]
+        ],
+        theme: 'striped',
+        headStyles: { fillColor: TINTA, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 },
+        styles: { fontSize: 8.5, cellPadding: 2 },
+        didParseCell: data => {
+          if (data.section === 'body' && data.row.index === 8) data.cell.styles.fontStyle = 'bold';
+        }
+      });
 
-    // Project Info Box
-    autoTable(doc, {
-      startY: 44,
-      head: [['Identificação do Projeto & Responsável', 'Localização & Propriedade']],
-      body: [
-        [
-          `Projeto: ${projectName}\nResponsável: ${responsibleTech}`,
-          `Cliente/Produtor: ${clientName}\nLocal: ${locationName}`
-        ]
-      ],
-      theme: 'grid',
-      headStyles: { fillColor: [2, 132, 199], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 9 },
-      styles: { fontSize: 8.5, cellPadding: 3, textColor: [30, 41, 59] }
-    });
+      const linhasConexoes = [
+        !entradas.bombaSubmersa && conexoes.succao.length > 0 ? `Conexões na sucção: ${descreverConexoes(conexoes.succao)}.` : '',
+        conexoes.recalque.length > 0 ? `Conexões no recalque: ${descreverConexoes(conexoes.recalque)}.` : '',
+        entradas.usarConexoesTipicas ? 'Conexões estimadas por um conjunto típico (modo simples).' : ''
+      ].filter(Boolean);
+      if (linhasConexoes.length > 0) {
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.setTextColor(...CINZA);
+        const linhas = pdf.splitTextToSize(linhasConexoes.join(' '), 182);
+        pdf.text(linhas, 14, ultimoY() + 5);
+        (pdf as any).lastAutoTable.finalY = ultimoY() + 2 + linhas.length * 3.6;
+      }
 
-    // 1. Hydraulic Data Table
-    const startY1 = (doc as any).lastAutoTable.finalY + 6;
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(15, 23, 42);
-    doc.text('1. PARÂMETROS DA INSTALAÇÃO E MEMÓRIA DE CÁLCULO', 14, startY1);
+      tituloSecao('2. Potência', ultimoY() + 8);
+      autoTable(pdf, {
+        startY: ultimoY() + 11,
+        head: [['Vazão', 'Potência hidráulica', 'Potência no eixo', `Com folga de ${resultados.folgaMotorPct}%`, 'Motor comercial']],
+        body: [[
+          `${numero(resultados.vazaoM3h, 2)} m³/h`,
+          `${numero(resultados.potenciaHidraulicaCv, 2)} cv`,
+          `${numero(resultados.potenciaEixoCv, 2)} cv`,
+          `${numero(resultados.potenciaMotorNecessariaCv, 2)} cv`,
+          `${cv(resultados.motorComercialCv)} cv`
+        ]],
+        theme: 'grid',
+        headStyles: { fillColor: VERDE, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 },
+        styles: { fontSize: 9, cellPadding: 2.5 }
+      });
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(...CINZA);
+      pdf.text(
+        `Rendimentos adotados: bomba ${numero(entradas.rendimentoBombaPct, 0)}%, motor ${numero(entradas.rendimentoMotorPct, 0)}%. Consumo estimado: ${numero(resultados.consumoDiarioKwh, 1)} kWh/dia em ${numero(resultados.horasPorDia, 1)} h/dia.`,
+        14, ultimoY() + 5
+      );
+      (pdf as any).lastAutoTable.finalY = ultimoY() + 5;
 
-    autoTable(doc, {
-      startY: startY1 + 3,
-      head: [['Parâmetro', 'Sucção (Captação)', 'Recalque (Elevação)', 'Total do Sistema']],
-      body: [
-        ['Desnível Geométrico (m)', inputs.isSubmerged ? 'Submersa (0.0 m)' : `${inputs.suctionHeight.toFixed(1)} m`, `${inputs.dischargeHeight.toFixed(1)} m`, `${results.totalGeometricHeightMca.toFixed(1)} m`],
-        ['Comprimento Linear da Tubulação (m)', inputs.isSubmerged ? '-' : `${inputs.suctionLength.toFixed(1)} m`, `${inputs.dischargeLength.toFixed(1)} m`, `${(inputs.suctionLength + inputs.dischargeLength).toFixed(1)} m`],
-        ['Perdas Localizadas / Conexões (Leq)', inputs.isSubmerged ? '-' : `+${results.suctionEquivalentLengthM.toFixed(1)} m`, `+${results.dischargeEquivalentLengthM.toFixed(1)} m`, `+${(results.suctionEquivalentLengthM + results.dischargeEquivalentLengthM).toFixed(1)} m eq.`],
-        ['Comprimento Total Virtual (L + Leq)', inputs.isSubmerged ? '-' : `${results.suctionTotalLengthM.toFixed(1)} m`, `${results.dischargeTotalLengthM.toFixed(1)} m`, `${(results.suctionTotalLengthM + results.dischargeTotalLengthM).toFixed(1)} m`],
-        ['Diâmetro Interno Adotado', inputs.isSubmerged ? '-' : `${inputs.suctionDiameterMm} mm`, `${inputs.dischargeDiameterMm} mm`, '-'],
-        ['Material do Tubo (Coef. Hazen C)', inputs.isSubmerged ? '-' : suctionMat, dischargeMat, '-'],
-        ['Velocidade do Fluido no Tubo', inputs.isSubmerged ? '-' : `${results.suctionVelocityMs.toFixed(2)} m/s`, `${results.dischargeVelocityMs.toFixed(2)} m/s`, 'Faixa Recomendada: 0.8 a 2.2 m/s'],
-        ['Perda de Carga por Atrito (hf)', inputs.isSubmerged ? '0.00 mca' : `${results.suctionLossMca.toFixed(2)} mca`, `${results.dischargeLossMca.toFixed(2)} mca`, `${results.totalHeadLossMca.toFixed(2)} mca`],
-        ['Pressão Residual de Saída', '-', '-', `${inputs.residualPressureMca.toFixed(1)} mca`],
-        ['Altura Manométrica Total (HMT)', '-', '-', `${results.totalDynamicHeadMca.toFixed(1)} mca`]
-      ],
-      theme: 'striped',
-      headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 },
-      styles: { fontSize: 8, cellPadding: 2 }
-    });
+      tituloSecao('3. Bombas do catálogo que atendem', ultimoY() + 9);
+      autoTable(pdf, {
+        startY: ultimoY() + 12,
+        head: [['Modelo', 'Motor', 'Alimentação', 'Bocais', 'Ponto de trabalho', 'Avaliação']],
+        body: compativeis.length > 0
+          ? compativeis.slice(0, 5).map(m => [
+              `${m.bomba.fabricante} ${m.bomba.modelo}`,
+              `${cv(m.bomba.potenciaCv)} cv`,
+              m.bomba.tensao || m.bomba.fase,
+              /submers/i.test(m.bomba.bocalSuccao) ? `saída ${m.bomba.bocalRecalque}` : `${m.bomba.bocalSuccao} / ${m.bomba.bocalRecalque}`,
+              `${numero(m.pontoTrabalho.vazaoM3h, 2)} m³/h a ${numero(m.pontoTrabalho.alturaMca, 1)} mca`,
+              m.rotulo
+            ])
+          : [['Nenhum modelo do catálogo atende a este ponto.', '', '', '', '', '']],
+        theme: 'grid',
+        headStyles: { fillColor: VERDE, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+        styles: { fontSize: 8, cellPadding: 2 }
+      });
 
-    // 2. Power Requirements Table
-    const startY2 = (doc as any).lastAutoTable.finalY + 6;
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(15, 23, 42);
-    doc.text('2. DIMENSIONAMENTO DE POTÊNCIA DO MOTOR', 14, startY2);
+      let y = ultimoY() + 6;
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(...CINZA);
+      const notas = [
+        ...resultados.avisos.filter(w => w.nivel !== 'info').map(w => `Atenção: ${w.mensagem}`),
+        'Perdas calculadas por Hazen-Williams com comprimentos equivalentes. As curvas do catálogo são aproximadas: confirme a seleção na curva oficial do fabricante antes da compra.'
+      ];
+      for (const nota of notas) {
+        const linhas = pdf.splitTextToSize(nota, 182);
+        if (y + linhas.length * 3.6 > 285) { pdf.addPage(); y = 16; }
+        pdf.text(linhas, 14, y);
+        y += linhas.length * 3.6 + 1.5;
+      }
 
-    autoTable(doc, {
-      startY: startY2 + 3,
-      head: [['Vazão de Projeto', 'Potência Hidráulica', 'Potência no Eixo', 'Motor Comercial Sugerido']],
-      body: [
-        [
-          `${results.flowRateM3h.toFixed(1)} m³/h (${results.flowRateLph.toLocaleString()} L/h)`,
-          `${results.hydraulicPowerCv.toFixed(2)} CV (${results.hydraulicPowerKw.toFixed(2)} kW)`,
-          `${results.motorShaftPowerCv.toFixed(2)} CV (${results.motorShaftPowerKw.toFixed(2)} kW)`,
-          `${results.suggestedCommercialPowerCv} CV (${(results.suggestedCommercialPowerCv * 0.7355).toFixed(2)} kW)`
-        ]
-      ],
-      theme: 'grid',
-      headStyles: { fillColor: [16, 185, 129], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 },
-      styles: { fontSize: 8.5, cellPadding: 3, fontStyle: 'bold' }
-    });
+      y += 16;
+      if (y > 280) { pdf.addPage(); y = 40; }
+      pdf.setDrawColor(...CINZA);
+      pdf.line(20, y, 90, y);
+      pdf.line(120, y, 190, y);
+      pdf.text('Responsável pelo cálculo', 55, y + 4, { align: 'center' });
+      pdf.text('Cliente', 155, y + 4, { align: 'center' });
 
-    // 3. Recommended Pumps Section
-    const startY3 = (doc as any).lastAutoTable.finalY + 6;
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(15, 23, 42);
-    doc.text('3. BOMBAS SELECIONADAS NO BANCO DE DADOS', 14, startY3);
-
-    const pumpRows = matchedPumps.slice(0, 4).map((m, idx) => [
-      `${idx + 1}º ${m.pump.brand} ${m.pump.model}`,
-      `${m.pump.powerCv} CV (${m.pump.powerKw} kW)`,
-      m.pump.phase,
-      `Suc: ${m.pump.suctionPortPol} | Rec: ${m.pump.dischargePortPol}`,
-      `${m.operatingPoint.flowM3h.toFixed(1)} m³/h @ ${m.operatingPoint.headMca.toFixed(1)} mca`,
-      `${m.suitabilityScore}% (${m.statusLabel})`
-    ]);
-
-    autoTable(doc, {
-      startY: startY3 + 3,
-      head: [['Modelo da Motobomba', 'Potência', 'Alimentação Elétrica', 'Conexões', 'Ponto de Operação', 'Compatibilidade']],
-      body: pumpRows,
-      theme: 'grid',
-      headStyles: { fillColor: [2, 132, 199], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
-      styles: { fontSize: 7.8, cellPadding: 2.5 }
-    });
-
-    // Footer signature line
-    const startY4 = (doc as any).lastAutoTable.finalY + 18;
-    if (startY4 < 270) {
-      doc.setDrawColor(148, 163, 184);
-      doc.line(20, startY4, 90, startY4);
-      doc.line(120, startY4, 190, startY4);
-
-      doc.setFontSize(7.5);
-      doc.setTextColor(100, 116, 139);
-      doc.text('Responsável Técnico / Projetista', 55, startY4 + 4, { align: 'center' });
-      doc.text('Produtor Rural / Cliente', 155, startY4 + 4, { align: 'center' });
+      const nomeArquivo = (nomeProjeto || 'bomba').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_|_$/g, '');
+      pdf.save(`Memorial_${nomeArquivo || 'bomba'}.pdf`);
+    } catch (err) {
+      console.error(err);
+      setFalhou(true);
+    } finally {
+      setGerando(false);
     }
-
-    doc.save(`Laudo_Dimensionamento_Bomba_${projectName.replace(/\s+/g, '_')}.pdf`);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-      <div className="relative w-full max-w-3xl bg-slate-900 border border-sky-500/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-        
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 bg-slate-950/70 flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400">
-              <FileText className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-white">
-                Memorial Técnico de Dimensionamento
-              </h3>
-              <p className="text-xs text-slate-400">
-                Visualize e baixe o laudo oficial em PDF para compras e execução da obra
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <X className="w-5 h-5" />
+    <Modal
+      aberto={aberto}
+      aoFechar={aoFechar}
+      titulo="Memorial de cálculo em PDF"
+      descricao="Para guardar, imprimir ou levar à revenda. Os campos abaixo são opcionais."
+      rodape={
+        <div className="space-y-2">
+          {falhou && <p role="alert" className="text-sm font-medium text-danger">Não foi possível gerar o PDF. Tente de novo.</p>}
+          <button type="button" onClick={baixarPdf} disabled={gerando} className="btn btn-primary w-full">
+            <Download className="h-5 w-5" aria-hidden="true" />
+            {gerando ? 'Gerando PDF…' : 'Baixar PDF'}
           </button>
         </div>
-
-        {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          
-          {/* Metadata Inputs */}
-          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-sky-400">
-              Dados do Laudo
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-slate-300">Nome do Projeto</label>
-                <input
-                  type="text"
-                  value={projectName}
-                  onChange={e => setProjectName(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-medium"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-slate-300">Cliente / Produtor</label>
-                <input
-                  type="text"
-                  value={clientName}
-                  onChange={e => setClientName(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-medium"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-slate-300">Localização / Fazenda</label>
-                <input
-                  type="text"
-                  value={locationName}
-                  onChange={e => setLocationName(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-medium"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-slate-300">Responsável Técnico</label>
-                <input
-                  type="text"
-                  value={responsibleTech}
-                  onChange={e => setResponsibleTech(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-medium"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Preview of Technical Summary */}
-          <div className="p-4 rounded-xl bg-slate-950/40 border border-slate-800/80 space-y-3 text-xs">
-            <h4 className="font-bold text-white uppercase text-xs tracking-wider border-b border-slate-800 pb-2">
-              Resumo do Laudo Técnico
-            </h4>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-              <div className="p-2 rounded-lg bg-slate-900 border border-slate-800">
-                <div className="text-slate-400 text-[11px]">HMT Total</div>
-                <div className="text-base font-bold text-sky-400">{results.totalDynamicHeadMca.toFixed(1)} mca</div>
-              </div>
-              <div className="p-2 rounded-lg bg-slate-900 border border-slate-800">
-                <div className="text-slate-400 text-[11px]">Vazão Q</div>
-                <div className="text-base font-bold text-cyan-400">{results.flowRateM3h.toFixed(1)} m³/h</div>
-              </div>
-              <div className="p-2 rounded-lg bg-slate-900 border border-slate-800">
-                <div className="text-slate-400 text-[11px]">Motor Sugerido</div>
-                <div className="text-base font-bold text-emerald-400">{results.suggestedCommercialPowerCv} CV</div>
-              </div>
-              <div className="p-2 rounded-lg bg-slate-900 border border-slate-800">
-                <div className="text-slate-400 text-[11px]">Perdas Atrito</div>
-                <div className="text-base font-bold text-amber-400">{results.totalHeadLossMca.toFixed(1)} mca</div>
-              </div>
-            </div>
-
-            {topPump && (
-              <div className="p-3 rounded-lg bg-emerald-950/30 border border-emerald-800/40 flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] text-emerald-300 font-bold">Principal Bomba Recomendada:</div>
-                  <div className="text-sm font-bold text-white">{topPump.pump.brand} {topPump.pump.model} ({topPump.pump.powerCv} CV)</div>
-                </div>
-                <span className="text-xs font-bold text-emerald-400 bg-emerald-900/60 px-2.5 py-1 rounded-full border border-emerald-700">
-                  {topPump.statusLabel}
-                </span>
-              </div>
-            )}
-          </div>
-
+      }
+    >
+      <div className="space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextField rotulo="Projeto" valor={nomeProjeto} aoAlterar={setNomeProjeto} exemplo="Ex.: Irrigação da horta" />
+          <TextField rotulo="Cliente" valor={nomeCliente} aoAlterar={setNomeCliente} exemplo="Nome do produtor" />
+          <TextField rotulo="Local" valor={local} aoAlterar={setLocal} exemplo="Fazenda, município" />
+          <TextField rotulo="Responsável pelo cálculo" valor={responsavel} aoAlterar={setResponsavel} exemplo="Seu nome" />
         </div>
-
-        {/* Footer Actions */}
-        <div className="px-6 py-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            Fechar
-          </button>
-          
-          <button
-            onClick={handleDownloadPdf}
-            className="flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-sky-600/30 transition-all"
-          >
-            <Download className="w-4 h-4" />
-            <span>Baixar Laudo Técnico em PDF</span>
-          </button>
-        </div>
-
+        <dl className="tabular divide-y divide-line rounded-xl bg-sunken px-3.5 text-[15px]">
+          <div className="flex justify-between gap-3 py-2"><dt className="text-muted">Vazão</dt><dd className="font-semibold">{numero(resultados.vazaoM3h, 2)} m³/h</dd></div>
+          <div className="flex justify-between gap-3 py-2"><dt className="text-muted">Altura manométrica</dt><dd className="font-semibold">{numero(resultados.hmtMca, 1)} mca</dd></div>
+          <div className="flex justify-between gap-3 py-2"><dt className="text-muted">Motor</dt><dd className="font-semibold">{cv(resultados.motorComercialCv)} cv</dd></div>
+          <div className="flex justify-between gap-3 py-2"><dt className="text-muted">Bombas listadas</dt><dd className="font-semibold">{Math.min(5, compativeis.length)}</dd></div>
+        </dl>
       </div>
-    </div>
+    </Modal>
   );
 };

@@ -1,212 +1,150 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --color-primary: #0284c7;
-    --color-primary-hover: #0369a1;
-    --color-primary-light: #e0f2fe;
-    --color-bg-main: #0b1329;
-    --color-card-bg: rgba(15, 23, 42, 0.75);
-    --color-text-main: #f1f5f9;
-    --color-text-muted: #94a3b8;
-    --color-border: rgba(56, 189, 248, 0.15);
-  }
+@custom-variant dark (&:where(.dark, .dark *));
 
-  html.light {
-    --color-primary: #059669;
-    --color-primary-hover: #047857;
-    --color-primary-light: #d1fae5;
-    --color-bg-main: #f8fafc;
-    --color-card-bg: #ffffff;
-    --color-text-main: #0f172a;
-    --color-text-muted: #64748b;
-    --color-border: #e2e8f0;
+/*
+ * Identidade HidroCalc
+ * Verde de lavoura como cor da marca; azul só onde há água (diagramas e curvas).
+ * Tema claro é o padrão: lê melhor no sol. Fontes do sistema: nada para baixar, funciona offline.
+ */
+@theme static {
+  --color-page: #f1f4ec;
+  --color-surface: #ffffff;
+  --color-sunken: #e7ece1;
+  --color-ink: #15231a;
+  --color-muted: #536358;
+  --color-line: #d3dbcd;
+  --color-brand: #1f6b3a;
+  --color-brand-strong: #164f2b;
+  --color-brand-tint: #e2f0e2;
+  --color-on-brand: #ffffff;
+  --color-water: #1a74b0;
+  --color-water-tint: #dfeef8;
+  --color-warn: #7d4a00;
+  --color-warn-tint: #fbeed3;
+  --color-danger: #a3241b;
+  --color-danger-tint: #fbe5e2;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html.dark {
+  --color-page: #0e1511;
+  --color-surface: #16201a;
+  --color-sunken: #1d2a22;
+  --color-ink: #e8efe8;
+  --color-muted: #a1b3a6;
+  --color-line: #2c3b31;
+  --color-brand: #63c07d;
+  --color-brand-strong: #7fd296;
+  --color-brand-tint: #1b3223;
+  --color-on-brand: #08140c;
+  --color-water: #5db4e4;
+  --color-water-tint: #15303f;
+  --color-warn: #f0c36a;
+  --color-warn-tint: #3a2c10;
+  --color-danger: #ff9a8f;
+  --color-danger-tint: #3f1a17;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
-    background-color: var(--color-bg-main);
-    color: var(--color-text-main);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    min-height: 100vh;
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100dvh;
     overflow-x: hidden;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  button, select, summary, [role="button"] {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
   }
 }
 
-/* Glassmorphism Styles - Dark */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(56, 189, 248, 0.15);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-surface;
+  }
+
+  /* Campos: 16px evita o zoom automático do iPhone; 48px de altura para o dedo. */
+  .input {
+    @apply block w-full min-h-12 rounded-xl border border-line bg-surface px-3.5 text-base text-ink;
+    @apply placeholder:text-muted/70;
+  }
+  .input:focus {
+    @apply border-brand outline-2 outline-offset-0 outline-brand;
+  }
+  .input[aria-invalid="true"] {
+    @apply border-danger;
+  }
+  select.input {
+    @apply appearance-none pr-10 bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23708074' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 0.75rem center;
+    background-size: 1.1rem;
+  }
+
+  .btn {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-4 text-base font-semibold;
+    @apply transition-colors disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-brand text-on-brand hover:bg-brand-strong;
+  }
+  .btn-secondary {
+    @apply border border-line bg-surface text-ink hover:bg-sunken;
+  }
+  .btn-quiet {
+    @apply text-brand hover:bg-brand-tint;
+  }
+  .btn-sm {
+    @apply min-h-10 rounded-lg px-3 text-sm;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
-.glass-panel-subtle {
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* Light Mode Overrides for Crisp White & Emerald Aesthetics */
-html.light body {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
-}
-
-html.light .glass-panel {
-  background: #ffffff !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 4px 18px -2px rgba(16, 185, 129, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
-}
-
-html.light .glass-panel-subtle {
-  background: #f8fafc !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border: 1px solid #e2e8f0 !important;
-}
-
-html.light .bg-slate-950,
-html.light .bg-slate-900,
-html.light .bg-slate-900\/90,
-html.light .bg-slate-900\/80,
-html.light .bg-slate-900\/60,
-html.light .bg-slate-900\/50 {
-  background-color: #ffffff;
-}
-
-html.light .bg-slate-800,
-html.light .bg-slate-800\/80 {
-  background-color: #f1f5f9;
-  color: #1e293b;
-}
-
-html.light .hover\:bg-slate-800:hover,
-html.light .hover\:bg-slate-700:hover {
-  background-color: #e2e8f0;
-}
-
-html.light .border-slate-900,
-html.light .border-slate-800,
-html.light .border-slate-800\/80,
-html.light .border-slate-700 {
-  border-color: #e2e8f0;
-}
-
-html.light input,
-html.light select,
-html.light textarea {
-  background-color: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-html.light input:focus,
-html.light select:focus,
-html.light textarea:focus {
-  background-color: #ffffff !important;
-  border-color: #059669 !important;
-  outline-color: #059669 !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-}
-
-html.light .text-white {
-  color: #0f172a !important;
-}
-
-html.light .text-slate-100,
-html.light .text-slate-200,
-html.light .text-slate-300 {
-  color: #334155 !important;
-}
-
-html.light .text-slate-400 {
-  color: #64748b !important;
-}
-
-html.light .text-sky-400,
-html.light .text-sky-300,
-html.light .text-sky-200 {
-  color: #059669 !important;
-}
-
-html.light .border-sky-500,
-html.light .border-sky-500\/20,
-html.light .border-sky-500\/30,
-html.light .border-sky-500\/50,
-html.light .border-cyan-500\/20 {
-  border-color: #10b981 !important;
-}
-
-html.light .bg-sky-500\/10,
-html.light .bg-sky-500\/20,
-html.light .bg-cyan-500\/10,
-html.light .bg-sky-950\/50,
-html.light .bg-sky-950\/60 {
-  background-color: #ecfdf5 !important;
-  color: #047857 !important;
-}
-
-html.light .from-sky-600 {
-  --tw-gradient-from: #059669 var(--tw-gradient-from-position) !important;
-}
-html.light .via-cyan-600 {
-  --tw-gradient-via: #0d9488 var(--tw-gradient-via-position) !important;
-}
-html.light .to-blue-600 {
-  --tw-gradient-to: #047857 var(--tw-gradient-to-position) !important;
-}
-html.light .bg-sky-600 {
-  background-color: #059669 !important;
-}
-html.light .bg-sky-600:hover,
-html.light .hover\:bg-sky-500:hover {
-  background-color: #047857 !important;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
-}
-
-html.light ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary);
-}
-
-@keyframes pulseSlow {
-  0%, 100% { opacity: 0.2; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.05); }
-}
-
-.animate-pulse-slow {
-  animation: pulseSlow 4s ease-in-out infinite;
-}
-
+/* Água correndo no esquema da instalação */
 @keyframes flowDash {
   to {
     stroke-dashoffset: -20;
   }
 }
-
-.animate-water-flow {
+.water-flow {
   stroke-dasharray: 6 4;
-  animation: flowDash 1s linear infinite;
+  animation: flowDash 1.2s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .water-flow {
+    animation: none;
+  }
+  * {
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
 }

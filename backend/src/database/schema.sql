@@ -1,5 +1,5 @@
 -- ==========================================================
--- SCRIPT DE CRIAÇÃO DO BANCO DE DADOS: HIDRÁULICA (IFNMG)
+-- BANCO DE DADOS: HIDROCALC (IFNMG)
 -- ==========================================================
 
 CREATE DATABASE IF NOT EXISTS hidraulica_db
@@ -8,7 +8,7 @@ CREATE DATABASE IF NOT EXISTS hidraulica_db
 
 USE hidraulica_db;
 
--- 1. Tabela de Fabricantes
+-- 1. Fabricantes
 CREATE TABLE IF NOT EXISTS fabricantes (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(100) NOT NULL UNIQUE,
@@ -17,9 +17,10 @@ CREATE TABLE IF NOT EXISTS fabricantes (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 2. Tabela de Bombas Hidráulicas
+-- 2. Bombas
 CREATE TABLE IF NOT EXISTS bombas (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  codigo VARCHAR(80) NOT NULL UNIQUE,   -- identificador estável usado pelo app (ex.: 'schneider-bc91s-10cv')
   fabricante_id INT NOT NULL,
   modelo VARCHAR(120) NOT NULL,
   tipo ENUM('centrifuga', 'submersivel', 'periferica', 'autoaspirante', 'injetora', 'solar') NOT NULL,
@@ -29,22 +30,24 @@ CREATE TABLE IF NOT EXISTS bombas (
   fase VARCHAR(80) DEFAULT 'Monofásico 127/220V',
   succao_pol VARCHAR(30) NOT NULL,
   recalque_pol VARCHAR(30) NOT NULL,
+  vazao_min_m3h DECIMAL(8,2) NOT NULL DEFAULT 0,
   vazao_max_m3h DECIMAL(8,2) NOT NULL,
   altura_max_mca DECIMAL(8,2) NOT NULL,
-  coef_a DECIMAL(12,6) NOT NULL, -- Coeficiente a da curva H = a*Q^2 + b*Q + c
-  coef_b DECIMAL(12,6) NOT NULL, -- Coeficiente b da curva
-  coef_c DECIMAL(12,6) NOT NULL, -- Coeficiente c da curva (H estático a Q=0)
-  vazao_bep_m3h DECIMAL(8,2),    -- Vazão no Ponto de Melhor Eficiência
-  altura_bep_mca DECIMAL(8,2),   -- Altura no Ponto de Melhor Eficiência
+  coef_a DECIMAL(12,6) NOT NULL, -- curva H = a*Q^2 + b*Q + c (Q em m3/h, H em mca)
+  coef_b DECIMAL(12,6) NOT NULL,
+  coef_c DECIMAL(12,6) NOT NULL,
+  vazao_bep_m3h DECIMAL(8,2),    -- ponto de melhor eficiência
+  altura_bep_mca DECIMAL(8,2),
   rendimento_max_pct INT DEFAULT 60,
   preco_estimado_brl DECIMAL(10,2),
   link_manual VARCHAR(255),
-  descricao TEXT,
+  pontos_curva JSON,             -- [{ "flowM3h": 1.0, "headMca": 45 }, ...]
+  caracteristicas JSON,          -- ["texto", "texto", ...]
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (fabricante_id) REFERENCES fabricantes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 3. Tabela de Dimensionamentos Salvos / Projetos
+-- 3. Dimensionamentos salvos
 CREATE TABLE IF NOT EXISTS dimensionamentos_salvos (
   id INT AUTO_INCREMENT PRIMARY KEY,
   projeto_nome VARCHAR(150) NOT NULL,
